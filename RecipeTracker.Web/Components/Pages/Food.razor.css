@@ -1,0 +1,169 @@
+﻿/* Food Container & Item Styles */
+.food-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center content horizontally */
+    gap: 5%;
+    max-width: 1200px; /* Control the max width */
+    margin: 0 auto; /* Center the container */
+}
+
+.food-item {
+    flex: 1 1 10%; /* Allow 10 cards per row */
+    box-sizing: border-box;
+    margin-bottom: 2vw;
+}
+
+@media (max-width: 1600px) {
+    .food-item {
+        flex: 1 1 12%; /* Adjust to 8 cards per row on large screens */
+    }
+}
+
+@media (max-width: 1200px) {
+    .food-item {
+        flex: 1 1 15%; /* Adjust for 6 cards per row on medium screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .food-item {
+        flex: 1 1 45%; /* 2 cards per row for smaller screens */
+    }
+
+    .food-container {
+        gap: 4%;
+    }
+}
+
+@media (max-width: 480px) {
+    .food-item {
+        flex: 1 1 100%; /* Full width on very small screens */
+    }
+}
+
+/* Recipe Cards Styles */
+.recipe-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly; /* Evenly space the cards */
+    gap: 2vw;
+    max-width: 1200px; /* Set a max-width to prevent stretching */
+    margin: 0 auto; /* Center the cards container */
+}
+
+    .recipe-cards .card {
+        flex: 1 1 10%; /* Allow 10 cards per row on large screens */
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1rem; /* Reduced padding */
+        background-color: #fff;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        text-align: center;
+        max-width: 200px; /* Limit the card width */
+    }
+
+        .recipe-cards .card img {
+            width: 100%;
+            max-width: 200px; /* Same max width for images */
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-cards .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .recipe-cards .card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .recipe-cards .card p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .recipe-cards .card a {
+            display: inline-block;
+            margin-top: 1rem;
+            text-decoration: none;
+            color: #1b6ec2;
+            font-weight: bold;
+        }
+
+            .recipe-cards .card a:hover {
+                text-decoration: underline;
+            }
+
+/* Responsive Media Queries */
+@media (max-width: 1600px) {
+    .recipe-cards .card {
+        flex: 1 1 12%; /* Allow 8 cards per row on large screens */
+    }
+}
+
+@media (max-width: 1200px) {
+    .recipe-cards .card {
+        flex: 1 1 15%; /* Allow 6 cards per row on medium screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .recipe-cards .card {
+        flex: 1 1 45%; /* Display 2 cards per row for smaller screens */
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .recipe-cards .card {
+        padding: 1rem; /* Less padding on mobile */
+        flex: 1 1 100%; /* Full width for each card on small screens */
+    }
+}
+
+/* Search Bar Styling */
+.search-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem auto;
+    max-width: 600px;
+    width: 100%;
+}
+
+    .search-bar input {
+        width: 80%;
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .search-bar button {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        color: white;
+        background-color: #006bb7;
+        border: 1px solid #006bb7;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .search-bar button:hover {
+            background-color: #005a9c;
+            border-color: #005a9c;
+        }
+
+        .search-bar input:focus,
+        .search-bar button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #258cfb;
+        }

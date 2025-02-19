@@ -25,7 +25,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RecipeTracker.AppHost")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+193c01c0f991ca1f36c5455d58a1ca0ef1828c97")]
 [assembly: System.Reflection.AssemblyProductAttribute("RecipeTracker.AppHost")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RecipeTracker.AppHost")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,0 +1,65 @@
+@page "/food"
+@using RecipeTracker.Web.Components.Models
+@rendermode InteractiveServer
+@inject TheMealDbApiClient ApiClient
+
+<PageTitle>Food Search</PageTitle>
+
+<h3>Search for Recipes</h3>
+
+<div class="search-bar">
+	<input type="text" @bind="_query" placeholder="Enter a recipe name" />
+	<button @onclick="SearchRecipes">Search</button>
+</div>
+
+@if (_meals == null)
+{
+	<p>Loading...</p>
+}
+else if (_meals.Count == 0)
+{
+	<p>No recipes found.</p>
+}
+else
+{
+	<div class="recipe-cards">
+		@foreach (var meal in _meals)
+		{
+			<div class="card">
+				<img src="@meal.StrMealThumb" alt="Meal Image" />
+				<h4>@meal.StrMeal</h4>
+				<p><strong>Category:</strong> @meal.StrCategory</p>
+				<p><strong>Area:</strong> @meal.StrArea</p>
+				<p><strong>Instructions:</strong> @meal.StrInstructions</p>
+
+				<h5>Ingredients:</h5>
+				<ul>
+					@for (var i = 0; i < meal.Ingredients.Count; i++)
+					{
+						<li>@meal.Ingredients[i] - @meal.Measures[i]</li>
+					}
+				</ul>
+
+				<a href="@meal.StrYoutube" target="_blank">Watch on YouTube</a>
+			</div>
+		}
+	</div>
+}
+
+@code {
+	private string _query = string.Empty;
+	private List<Meal> _meals = [];
+
+	private async Task SearchRecipes()
+	{
+		var response = await ApiClient.GetRecipesAsync(_query);
+		if (response?.Meals != null)
+		{
+			_meals = response.Meals;
+		}
+		else
+		{
+			_meals = [];
+		}
+	}
+}

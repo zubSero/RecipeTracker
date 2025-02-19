@@ -20,3 +20,4 @@ vendor/
 
 # Ignore environment files
 .env
+.vs

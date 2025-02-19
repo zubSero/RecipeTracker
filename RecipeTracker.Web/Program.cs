@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Builder;
+using RecipeTracker.ServiceDefaults;
 using RecipeTracker.Web;
 using RecipeTracker.Web.Components;
+using RecipeTracker.Web.Components.Pages;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,23 +10,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddRedisOutputCache("cache");
 
-// Add services to the container.
+// Register necessary services for Razor Pages and Blazor
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents(); // For Blazor components
 
-builder.Services.AddHttpClient<WeatherApiClient>(client =>
-    {
-        // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
-        // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
-        client.BaseAddress = new("https+http://apiservice");
-    });
+builder.Services.AddRazorPages();  // This adds Razor Pages support
+
+// Load the configuration from appsettings.json
+var apiBaseUrl = builder.Configuration["MealDbApi:BaseUrl"];  // Reads the base URL from the configuration file
+
+// Register TheMealDbApiClient as a scoped service
+builder.Services.AddHttpClient<TheMealDbApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl); // Use the URL from the configuration
+});
 
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -35,9 +41,14 @@ app.UseOutputCache();
 
 app.MapStaticAssets();
 
+// Map Razor Components (this is for server-side Blazor)
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+// Redirect root to /food (default route)
+app.MapGet("/", () => Results.Redirect("/food"));
+
+// Add default endpoints
 app.MapDefaultEndpoints();
 
 app.Run();
