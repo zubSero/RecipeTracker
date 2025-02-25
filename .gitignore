@@ -24,3 +24,4 @@ vendor/
 RecipeTracker.ServiceDefaults/obj
 RecipeTracker.AppHost/obj
 RecipeTracker.ApiService/obj
+RecipeTracker.Web/obj
