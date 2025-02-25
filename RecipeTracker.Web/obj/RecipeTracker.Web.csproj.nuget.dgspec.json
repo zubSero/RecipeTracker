@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.Web\\RecipeTracker.Web.csproj": {}
+    "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.Web\\RecipeTracker.Web.csproj": {}
   },
   "projects": {
-    "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj": {
+    "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj",
+        "projectUniqueName": "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj",
         "projectName": "RecipeTracker.ServiceDefaults",
-        "projectPath": "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj",
-        "packagesPath": "C:\\Users\\david\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.ServiceDefaults\\obj\\",
+        "projectPath": "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj",
+        "packagesPath": "C:\\Users\\medgyda\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.ServiceDefaults\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\david\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\medgyda\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -102,20 +102,20 @@
         }
       }
     },
-    "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.Web\\RecipeTracker.Web.csproj": {
+    "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.Web\\RecipeTracker.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.Web\\RecipeTracker.Web.csproj",
+        "projectUniqueName": "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.Web\\RecipeTracker.Web.csproj",
         "projectName": "RecipeTracker.Web",
-        "projectPath": "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.Web\\RecipeTracker.Web.csproj",
-        "packagesPath": "C:\\Users\\david\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.Web\\obj\\",
+        "projectPath": "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.Web\\RecipeTracker.Web.csproj",
+        "packagesPath": "C:\\Users\\medgyda\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.Web\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\david\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\medgyda\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -130,8 +130,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj": {
-                "projectPath": "C:\\Users\\david\\Git\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj"
+              "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj": {
+                "projectPath": "C:\\Users\\medgyda\\GIT\\RecipeTracker\\RecipeTracker.ServiceDefaults\\RecipeTracker.ServiceDefaults.csproj"
               }
             }
           }

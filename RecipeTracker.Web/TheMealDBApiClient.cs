@@ -5,19 +5,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace RecipeTracker.Web
 {
-    public class TheMealDbApiClient
+    public class TheMealDbApiClient(
+        HttpClient httpClient,
+        IConfiguration configuration,
+        ILogger<TheMealDbApiClient> logger)
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _baseUrl;
-        private readonly ILogger<TheMealDbApiClient> _logger;
+        private readonly string _baseUrl = configuration["MealDbApi:BaseUrl"]!; // Fetch base URL from appsettings.json
 
         // Constructor to inject HttpClient, configuration for baseUrl, and logger
-        public TheMealDbApiClient(HttpClient httpClient, IConfiguration configuration, ILogger<TheMealDbApiClient> logger)
-        {
-            _httpClient = httpClient;
-            _baseUrl = configuration["MealDbApi:BaseUrl"];  // Fetch base URL from appsettings.json
-            _logger = logger;
-        }
 
         // Async method to get recipes based on a search query
         public async Task<ApiResponse?> GetRecipesAsync(string query)
@@ -26,12 +21,12 @@ namespace RecipeTracker.Web
 
             try
             {
-                var response = await _httpClient.GetAsync(url);
+                var response = await httpClient.GetAsync(url);
 
                 // Only proceed if request is successful
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogError($"Request failed with status code: {response.StatusCode}");
+                    logger.LogError($"Request failed with status code: {response.StatusCode}");
                     return null;
                 }
 
@@ -41,7 +36,7 @@ namespace RecipeTracker.Web
             catch (Exception ex)
             {
                 // Log any exception that occurs
-                _logger.LogError(ex, "Error occurred while fetching recipes");
+                logger.LogError(ex, "Error occurred while fetching recipes");
                 return null;
             }
         }
