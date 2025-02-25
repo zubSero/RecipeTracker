@@ -21,3 +21,6 @@ vendor/
 # Ignore environment files
 .env
 .vs
+RecipeTracker.ServiceDefaults/obj
+RecipeTracker.AppHost/obj
+RecipeTracker.ApiService/obj
