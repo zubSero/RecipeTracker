@@ -54,6 +54,20 @@
     padding-bottom: 50px; /* Ensure no overflow at the bottom */
     overflow: hidden; /* Prevent child elements from overflowing */
 }
+    .recipe-cards .card button {
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 1rem;
+    }
+
+        .recipe-cards .card button:hover {
+            background-color: #005f73;
+        }
 
     .recipe-cards .card {
         flex: 1 1 10%; /* Allow 10 cards per row on large screens */

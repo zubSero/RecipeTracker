@@ -31,6 +31,9 @@ public class Meal
     [JsonPropertyName("strYoutube")]
     public string? StrYoutube { get; set; }
 
+    // Add a flag to track if instructions are expanded
+    public bool ShowFullInstructions { get; set; }
+
     // Dynamically build the list of ingredients and measures
     public List<string> Ingredients { get; set; } = [];
     public List<string> Measures { get; set; } = [];

@@ -26,11 +26,19 @@ else
 		@foreach (var meal in _meals)
 		{
 			<div class="card">
-				<img src="@meal.StrMealThumb" alt="Meal Image" />
-				<h4>@meal.StrMeal</h4>
-				<p><strong>Category:</strong> @meal.StrCategory</p>
-				<p><strong>Area:</strong> @meal.StrArea</p>
-				<p><strong>Instructions:</strong> @meal.StrInstructions</p>
+				<img src="@(string.IsNullOrEmpty(meal.StrMealThumb) ? "default-image.jpg" : meal.StrMealThumb)" alt="Meal Image" />
+				<h4>@(meal.StrMeal ?? "Unknown Meal")</h4>
+				<p><strong>Category:</strong> @(string.IsNullOrEmpty(meal.StrCategory) ? "Unknown" : meal.StrCategory)</p>
+				<p><strong>Area:</strong> @(string.IsNullOrEmpty(meal.StrArea) ? "Unknown" : meal.StrArea)</p>
+        
+				<!-- Truncated Instructions with Show/Hide Toggle -->
+				<p><strong>Instructions:</strong></p>
+				<p>
+					@(meal is { StrInstructions.Length: > 150, ShowFullInstructions: false } ? meal.StrInstructions[..150] + "..." : meal.StrInstructions)
+				</p>
+				<button @onclick="() => ToggleInstructions(meal)">
+					@(meal.ShowFullInstructions ? "Show Less" : "Show More")
+				</button>
 
 				<h5>Ingredients:</h5>
 				<ul>
@@ -43,6 +51,8 @@ else
 				<a href="@meal.StrYoutube" target="_blank">Watch on YouTube</a>
 			</div>
 		}
+
+
 	</div>
 }
 
@@ -56,10 +66,21 @@ else
 		if (response?.Meals != null)
 		{
 			_meals = response.Meals;
+			// Initialize ShowFullInstructions for each meal
+			foreach (var meal in _meals)
+			{
+				meal.ShowFullInstructions = false; // Start with truncated instructions
+			}
 		}
 		else
 		{
 			_meals = [];
 		}
+	}
+
+	// Toggle the full instructions for a particular meal
+	private void ToggleInstructions(Meal meal)
+	{
+		meal.ShowFullInstructions = !meal.ShowFullInstructions;
 	}
 }
