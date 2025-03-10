@@ -8,10 +8,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RecipeTracker.ServiceDefaults\RecipeTracker.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\RecipeTracker.Web\RecipeTracker.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
   </ItemGroup>
 
 </Project>
