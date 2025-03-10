@@ -1,0 +1,219 @@
+﻿/* General Theme Colors */
+:root {
+    --background-color: #121212; /* Dark background color */
+    --text-color: #e0e0e0; /* Light text color */
+    --container-background: #1e1e1e; /* Slightly lighter background for the grid container */
+    --card-background: #232323; /* Card background color */
+    --btn-background: #006bb7; /* Button background color */
+    --btn-hover-background: #005f73; /* Button hover background */
+    --link-color: #1b6ec2; /* Link color */
+    --link-hover-color: #66aaff; /* Link hover color */
+    --spacing-unit: 1rem; /* Standard spacing unit */
+}
+
+/* Body and General Styles */
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure full height */
+    background-color: var(--background-color); /* Dark background */
+    color: var(--text-color); /* Light text */
+    box-sizing: border-box;
+}
+
+/* Links */
+a, .btn-link {
+    color: var(--link-color);
+}
+
+    a:hover, .btn-link:hover {
+        color: var(--link-hover-color);
+    }
+
+/* Button Styles */
+.btn-primary {
+    color: #fff;
+    background-color: var(--btn-background);
+    border-color: #1861ac;
+}
+
+    .btn-primary:hover {
+        background-color: var(--btn-hover-background);
+        border-color: #005f73;
+    }
+
+/* Content and Layout */
+.page {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh; /* Full viewport height */
+    height: 100%;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #343a40;
+    color: white;
+    height: 100%;
+    padding-top: 20px;
+}
+
+main {
+    flex: 1;
+    background-color: var(--background-color);
+    padding: var(--spacing-unit);
+    overflow-y: auto;
+}
+
+/* Search Bar Styles */
+.search-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-unit);
+    margin: 3rem auto;
+    width: 90%; /* Responsive width */
+    max-width: 35rem; /* Max width for control */
+    padding: 1rem;
+    background-color: var(--card-background); /* Darker background for the search bar */
+    border-radius: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Depth effect */
+}
+
+    .search-bar input {
+        width: 80%; /* Relative width */
+        padding: 1rem;
+        font-size: 1.1rem;
+        border: 1px solid #444;
+        border-radius: 0.5rem;
+        background-color: #333;
+        color: var(--text-color);
+    }
+
+    .search-bar button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        color: #fff;
+        background-color: var(--btn-background);
+        border: 1px solid var(--btn-background);
+        border-radius: 0.5rem;
+        cursor: pointer;
+    }
+
+        .search-bar button:hover {
+            background-color: var(--btn-hover-background);
+        }
+
+/* Recipe Grid and Card Layout */
+.food-container, .recipe-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); /* Responsive grid */
+    gap: 2rem;
+    padding: var(--spacing-unit);
+    background-color: var(--container-background); /* Slightly lighter background for grid container */
+    border-radius: 1rem; /* Rounded corners for the grid container */
+}
+
+    .recipe-cards .card, .food-item {
+        background-color: var(--card-background); /* Dark background for cards */
+        padding: var(--spacing-unit);
+        border-radius: 1rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+        .recipe-cards .card:hover, .food-item:hover {
+            transform: scale(1.05); /* Hover effect */
+        }
+
+        /* Button Styles for Cards */
+        .recipe-cards .card button {
+            background-color: var(--btn-background);
+            color: #fff;
+            border: 1px solid var(--btn-background);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+            .recipe-cards .card button:hover {
+                background-color: var(--btn-hover-background);
+            }
+
+        /* Card Link Styling */
+        .recipe-cards .card a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+            .recipe-cards .card a:hover {
+                color: var(--link-hover-color);
+            }
+
+/* Form Styles */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--text-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* Navbar Styles */
+.nav-link:hover {
+    background-color: #343a40;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.nav-link.active {
+    background-color: #495057;
+}
+
+.navbar-toggler {
+    border-color: white;
+}
+
+.navbar-toggler-icon {
+    background-color: white;
+}
+
+/* Error Boundary */
+.blazor-error-boundary {
+    padding: var(--spacing-unit);
+    color: white;
+    background-color: #b32121;
+    text-align: center;
+    border-radius: 8px;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred.";
+    }
+
+/* Fix issue with footer overflow */
+#blazor-error-ui {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f44336;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 100;
+    display: none; /* Initially hidden, show it with JS if an error occurs */
+}
+
+/* Layout for Cards and Food Items */
+.recipe-cards .card img, .food-item img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    object-fit: cover;
+}

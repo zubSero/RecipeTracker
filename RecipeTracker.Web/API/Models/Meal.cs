@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace RecipeTracker.Web.Components.Models;
+namespace RecipeTracker.Web.API.Models;
 
 public class Meal
 {

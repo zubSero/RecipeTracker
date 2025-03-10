@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using RecipeTracker.ServiceDefaults;
-using RecipeTracker.Web;
+using RecipeTracker.Web.API;
+using RecipeTracker.Web.API.Models.Interfaces;
+using RecipeTracker.Web.API.Models.Responses;
 using RecipeTracker.Web.Components;
-using RecipeTracker.Web.Components.Pages;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,8 @@ builder.Services.AddRazorPages();  // This adds Razor Pages support
 
 // Load the configuration from appsettings.json
 var apiBaseUrl = builder.Configuration["MealDbApi:BaseUrl"];  // Reads the base URL from the configuration file
+
+builder.Services.AddSingleton<IApiResponseDeserializer,ApiResponseDeserializer>();
 
 // Register TheMealDbApiClient as a scoped service
 builder.Services.AddHttpClient<TheMealDbApiClient>(client =>

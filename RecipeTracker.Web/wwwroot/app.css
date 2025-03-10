@@ -3,139 +3,147 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
-    height: 100%; /* Ensure full height */
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    box-sizing: border-box; /* Include padding in the element's total width and height */
+    height: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    background-color: #121212; /* Dark background for the entire app */
+    color: #e1e1e1; /* Light text color for dark theme */
+    font-size: 1rem; /* Set base font size for relative units */
 }
 
-a, .btn-link {
-    color: #006bb7;
+a {
+    color: #03a9f4; /* Blue color for links in dark theme */
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-.content {
-    padding-top: 1.1rem;
-    padding-bottom: 1.1rem; /* Optional: Adds some bottom padding */
-}
-
-h1:focus {
-    outline: none;
-}
-
-.valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
-}
-
-.invalid {
-    outline: 1px solid #e52400;
-}
-
-.validation-message {
-    color: #e52400;
-}
-
-img {
+/* Search Bar Styles */
+.search-bar {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
 }
 
-/* Error Boundary */
+.search-input {
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    border: 2px solid #444;
+    background-color: #333;
+    color: #fff;
+    border-radius: 0.25rem;
+    width: 100%;
+    max-width: 30rem; /* Max width for the search input */
+}
+
+.search-button {
+    padding: 0.5rem 1rem;
+    background-color: #1b6ec2;
+    color: #fff;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+    .search-button:hover {
+        background-color: #1861ac;
+    }
+
+/* Recipe Cards Grid */
+.recipe-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); /* Flexible grid layout */
+    gap: 1rem;
+    padding: 1rem;
+    width: 100%;
+}
+
+.card {
+    background-color: #2b2b2b; /* Dark card background */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Ensure cards take full available height */
+}
+
+.card-image {
+    width: 100%;
+    max-height: 15rem;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem; /* Space between image and content */
+}
+
+.card h4 {
+    color: #ffffff;
+    font-size: 1.25rem; /* Relative font size */
+    margin: 0 0 0.5rem; /* Space below the title */
+}
+
+.card p {
+    color: #dcdcdc;
+    font-size: 1rem; /* Relative font size for text */
+    margin: 0 0 0.5rem; /* Space below paragraphs */
+}
+
+.card a {
+    color: #03a9f4;
+    text-decoration: none;
+    margin-top: 1rem;
+}
+
+    .card a:hover {
+        text-decoration: underline;
+    }
+
+.card button {
+    background-color: #03a9f4;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    margin-top: 1rem; /* Space between ingredients and button */
+}
+
+    .card button:hover {
+        background-color: #0288d1;
+    }
+
+.youtube-link {
+    display: inline-block;
+    color: #03a9f4;
+    margin-top: 1rem;
+}
+
+/* Loading and No Recipes Found States */
+.loading, .no-recipes {
+    color: #ffffff;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Error Message */
 .blazor-error-boundary {
-    padding: 1rem 1rem 1rem 3.7rem;
+    padding: 1rem;
     color: white;
     background-color: #b32121;
     text-align: center;
-    border-radius: 8px;
+    border-radius: 0.5rem;
+    margin: 2rem 0;
 }
 
     .blazor-error-boundary::after {
         content: "An error has occurred.";
     }
-
-/* Form Styles */
-.form-floating > .form-control-plaintext::placeholder,
-.form-floating > .form-control::placeholder {
-    color: var(--bs-secondary-color);
-    text-align: end;
-}
-
-.form-floating > .form-control-plaintext:focus::placeholder,
-.form-floating > .form-control:focus::placeholder {
-    text-align: start;
-}
-
-/* Navbar Styles */
-.nav-link:hover {
-    background-color: #343a40; /* Darker background on hover */
-    transition: background-color 0.3s ease-in-out;
-}
-
-.nav-link.active {
-    background-color: #495057; /* Lighter background for the active link */
-}
-
-.navbar-toggler {
-    border-color: white;
-}
-
-.navbar-toggler-icon {
-    background-color: white;
-}
-
-/* Layout Styles */
-.page {
-    display: flex;
-    flex-direction: row; /* Flex container for the layout */
-    min-height: 100vh; /* Ensure the page takes up full viewport height */
-    height: 100%; /* Full height of the viewport */
-    overflow: hidden; /* Prevent the page from overflowing */
-}
-
-.sidebar {
-    width: 250px; /* Adjust this based on your sidebar's width */
-    background-color: #343a40; /* Example background color */
-    color: white; /* Example text color */
-    height: 100%; /* Full height */
-    padding-top: 20px; /* Adjust based on your content */
-    overflow: hidden; /* Prevent overflow inside the sidebar */
-}
-
-main {
-    flex: 1; /* Take the remaining space */
-    background-color: #f8f9fa;
-    padding: 20px;
-    overflow-y: auto; /* Scrollable content area if needed */
-}
-
-.content {
-    flex-grow: 1; /* Allow content to fill the available space */
-    padding-top: 1.1rem; /* Adjust padding */
-    overflow: hidden; /* Prevent unnecessary scroll in content */
-    min-height: 0; /* Allow it to shrink, but still expand when needed */
-}
-
-/* Fix issue with footer overflow */
-#blazor-error-ui {
-    position: fixed; /* Ensure the error UI stays in place */
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #f44336;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 100;
-    display: none; /* Initially hidden, show it with JS if an error occurs */
-}

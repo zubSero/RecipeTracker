@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RecipeTracker.ApiService\RecipeTracker.ApiService.csproj" />
-    <ProjectReference Include="..\RecipeTracker.Data\RecipeTracker.Data.csproj" />
     <ProjectReference Include="..\RecipeTracker.Web\RecipeTracker.Web.csproj" />
   </ItemGroup>
 

@@ -1,86 +1,95 @@
 @page "/food"
-@using RecipeTracker.Web.Components.Models
-@rendermode InteractiveServer
+@using RecipeTracker.Web.API
+@using RecipeTracker.Web.API.Models
 @inject TheMealDbApiClient ApiClient
+@rendermode InteractiveServer
 
 <PageTitle>Food Search</PageTitle>
 
 <h3>Search for Recipes</h3>
 
+<!-- Search Bar -->
 <div class="search-bar">
-	<input type="text" @bind="_query" placeholder="Enter a recipe name" />
-	<button @onclick="SearchRecipes">Search</button>
+    <input type="text" @bind="_query" placeholder="Enter a recipe name" class="search-input" />
+    <button @onclick="SearchRecipes" class="search-button">Search</button>
 </div>
 
+<!-- Loading, No Recipes Found, or Display Recipe Cards -->
 @if (_meals == null)
 {
-	<p>Loading...</p>
+    <p>Loading...</p>
 }
 else if (_meals.Count == 0)
 {
-	<p>No recipes found.</p>
+    <p>No recipes found.</p>
 }
 else
 {
-	<div class="recipe-cards">
-		@foreach (var meal in _meals)
-		{
-			<div class="card">
-				<img src="@(string.IsNullOrEmpty(meal.StrMealThumb) ? "default-image.jpg" : meal.StrMealThumb)" alt="Meal Image" />
-				<h4>@(meal.StrMeal ?? "Unknown Meal")</h4>
-				<p><strong>Category:</strong> @(string.IsNullOrEmpty(meal.StrCategory) ? "Unknown" : meal.StrCategory)</p>
-				<p><strong>Area:</strong> @(string.IsNullOrEmpty(meal.StrArea) ? "Unknown" : meal.StrArea)</p>
-        
-				<!-- Truncated Instructions with Show/Hide Toggle -->
-				<p><strong>Instructions:</strong></p>
-				<p>
-					@(meal is { StrInstructions.Length: > 150, ShowFullInstructions: false } ? meal.StrInstructions[..150] + "..." : meal.StrInstructions)
-				</p>
-				<button @onclick="() => ToggleInstructions(meal)">
-					@(meal.ShowFullInstructions ? "Show Less" : "Show More")
-				</button>
+    <!-- Recipe Cards Grid Container -->
+    <div class="recipe-cards grid-container">
+        @foreach (var meal in _meals)
+        {
+            <div class="card">
+                <!-- Meal Image -->
+                <img src="@(string.IsNullOrEmpty(meal.StrMealThumb) ? "default-image.jpg" : meal.StrMealThumb)" alt="Meal Image" class="card-image" />
 
-				<h5>Ingredients:</h5>
-				<ul>
-					@for (var i = 0; i < meal.Ingredients.Count; i++)
-					{
-						<li>@meal.Ingredients[i] - @meal.Measures[i]</li>
-					}
-				</ul>
+                <!-- Meal Title -->
+                <h4>@(meal.StrMeal ?? "Unknown Meal")</h4>
 
-				<a href="@meal.StrYoutube" target="_blank">Watch on YouTube</a>
-			</div>
-		}
+                <!-- Category and Area -->
+                <p><strong>Category:</strong> @(string.IsNullOrEmpty(meal.StrCategory) ? "Unknown" : meal.StrCategory)</p>
+                <p><strong>Area:</strong> @(string.IsNullOrEmpty(meal.StrArea) ? "Unknown" : meal.StrArea)</p>
 
+                <!-- Instructions (with Show/Hide Toggle) -->
+                <p><strong>Instructions:</strong></p>
+                <p>
+                    @(meal is { StrInstructions.Length: > 150, ShowFullInstructions: false } ? meal.StrInstructions[..150] + "..." : meal.StrInstructions)
+                </p>
+                <button @onclick="() => ToggleInstructions(meal)">
+                    @(meal.ShowFullInstructions ? "Show Less" : "Show More")
+                </button>
 
-	</div>
+                <!-- Ingredients List -->
+                <h5>Ingredients:</h5>
+                <ul>
+                    @for (var i = 0; i < meal.Ingredients.Count; i++)
+                    {
+                        <li>@meal.Ingredients[i] - @meal.Measures[i]</li>
+                    }
+                </ul>
+
+                <!-- YouTube Link -->
+                <a href="@meal.StrYoutube" target="_blank" class="youtube-link">Watch on YouTube</a>
+            </div>
+        }
+    </div>
 }
 
 @code {
-	private string _query = string.Empty;
-	private List<Meal> _meals = [];
+    private string _query = string.Empty;
+    private List<Meal> _meals = [];
 
-	private async Task SearchRecipes()
-	{
-		var response = await ApiClient.GetRecipesAsync(_query);
-		if (response?.Meals != null)
-		{
-			_meals = response.Meals;
-			// Initialize ShowFullInstructions for each meal
-			foreach (var meal in _meals)
-			{
-				meal.ShowFullInstructions = false; // Start with truncated instructions
-			}
-		}
-		else
-		{
-			_meals = [];
-		}
-	}
+    private async Task SearchRecipes()
+    {
+        var response = await ApiClient.GetRecipesAsync(_query);
+        if (response?.Meals != null)
+        {
+            _meals = response.Meals;
+            // Initialize ShowFullInstructions for each meal
+            foreach (var meal in _meals)
+            {
+                meal.ShowFullInstructions = false; // Start with truncated instructions
+            }
+        }
+        else
+        {
+            _meals = [];
+        }
+    }
 
-	// Toggle the full instructions for a particular meal
-	private void ToggleInstructions(Meal meal)
-	{
-		meal.ShowFullInstructions = !meal.ShowFullInstructions;
-	}
+    // Toggle the full instructions for a particular meal
+    private void ToggleInstructions(Meal meal)
+    {
+        meal.ShowFullInstructions = !meal.ShowFullInstructions;
+    }
 }
