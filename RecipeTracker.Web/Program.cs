@@ -3,6 +3,8 @@ using RecipeTracker.ServiceDefaults;
 using RecipeTracker.Web.API;
 using RecipeTracker.Web.API.Models.Interfaces;
 using RecipeTracker.Web.API.Models.Responses;
+using RecipeTracker.Web.API.Translations;
+using RecipeTracker.Web.API.Translations.Interface;
 using RecipeTracker.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,18 +23,14 @@ builder.Services.AddRazorPages();  // This adds Razor Pages support
 var apiBaseUrl = builder.Configuration["MealDbApi:BaseUrl"];  // Reads the base URL from the configuration file
 
 builder.Services.AddSingleton<IApiResponseDeserializer, ApiResponseDeserializer>();
+builder.Services.AddScoped<ITranslationService, TranslationService>();
 
 // Register TheMealDbApiClient as a scoped service
 builder.Services.AddHttpClient<TheMealDbApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl); // Use the URL from the configuration
 });
-
-// Register ApplicationDbContext with PostgreSQL
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
-
+builder.AddNpgsqlDbContext<TranslationDbContext>("postgresdb");
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -55,19 +53,6 @@ app.MapGet("/", () => Results.Redirect("/food"));
 
 // Add default endpoints
 app.MapDefaultEndpoints();
-
-// Ensure Database is Migrated and Seeded on Startup
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-    // Apply any pending migrations
-    if (dbContext.Database.GetPendingMigrations().Any())
-    {
-        dbContext.Database.EnsureCreated();
-        dbContext.Database.Migrate();
-    }
-}
-
+app.CreateDbIfNotExists();
 
 app.Run();

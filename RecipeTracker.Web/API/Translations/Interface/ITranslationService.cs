@@ -1,9 +1,14 @@
-﻿namespace RecipeTracker.Web.API.Translations.Interface;
-
-public interface ITranslationService
+﻿namespace RecipeTracker.Web.API.Translations.Interface
 {
-    Task<string?> GetTranslationAsync(string key, string languageCode);
-    Task AddOrUpdateTranslationAsync(Translation translation);
-    Task<IEnumerable<Translation>> GetAllTranslationsAsync(string languageCode);
-    Task<Dictionary<string, string>> GetTranslationsAsync(string languageCode, IEnumerable<string> keys);
+    public interface ITranslationService
+    {
+        // Retrieve a specific translation by key and language code
+        Task<string?> GetTranslationAsync(string key, string languageCode);
+
+        // Search for translations dynamically using a search term
+        Task<Dictionary<string, string>> SearchTranslationsAsync(string languageCode, string searchTerm);
+
+        // Retrieve all translations for a specific language code
+        Task<Dictionary<string, string>> GetAllTranslationsAsync(string languageCode);
+    }
 }

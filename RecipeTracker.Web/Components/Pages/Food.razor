@@ -1,27 +1,35 @@
 @page "/food"
+@using System.Text.Json
 @using RecipeTracker.Web.API
 @using RecipeTracker.Web.API.Models
 @using RecipeTracker.Web.API.Translations.Interface
-@inject TheMealDbApiClient ApiClient
 @inject ITranslationService TranslationService
+@inject TheMealDbApiClient ApiClient
 @rendermode InteractiveServer
 
-<PageTitle>@_translations["Food.PageTitle"]</PageTitle>
+<PageTitle>@GetTranslation("Food.PageTitle")</PageTitle>
 
-<h3>@_translations["Food.PageTitle"]</h3>
+<h3>@GetTranslation("Food.PageTitle")</h3>
 
 <div class="search-bar">
-    <input type="text" @bind="_query" placeholder="@_translations["Food.SearchPrompt"]" class="search-input" />
-    <button @onclick="SearchRecipes" class="search-button">@_translations["Food.SearchButton"]</button>
+    <input type="text" @bind="_query" placeholder="@GetTranslation("Food.SearchPrompt")"
+           class="search-input" @onkeydown="HandleKeyPress" aria-label="Search recipes" />
+    <button @onclick="SearchRecipes" class="search-button" disabled="@_isLoading" aria-label="Start search">
+        @(_isLoading ? GetTranslation("Food.Loading") : GetTranslation("Food.SearchButton"))
+    </button>
 </div>
 
-@if (_meals == null)
+@if (_errorMessage != null)
 {
-    <p>@_translations["Food.Loading"]</p>
+    <p class="error-message">@_errorMessage</p>
+}
+else if (_meals == null)
+{
+    <p>@GetTranslation("Food.Loading")</p>
 }
 else if (_meals.Count == 0)
 {
-    <p>@_translations["Food.NoRecipesFound"]</p>
+    <p>@GetTranslation("Food.NoRecipesFound")</p>
 }
 else
 {
@@ -29,73 +37,103 @@ else
         @foreach (var meal in _meals)
         {
             <div class="card">
-                <img src="@(string.IsNullOrEmpty(meal.StrMealThumb) ? "default-image.jpg" : meal.StrMealThumb)" alt="Meal Image" class="card-image" />
+                <img src="@(string.IsNullOrEmpty(meal.StrMealThumb) ? "default-image.jpg" : meal.StrMealThumb)"
+                     alt="Meal Image" class="card-image" loading="lazy" />
 
-                <h4>@(meal.StrMeal ?? _translations["Food.UnknownMeal"])</h4>
+                <h4>@(meal.StrMeal ?? GetTranslation("Food.UnknownMeal"))</h4>
 
-                <p><strong>@_translations["Food.Category"]</strong> @(string.IsNullOrEmpty(meal.StrCategory) ? _translations["Food.Unknown"] : meal.StrCategory)</p>
-                <p><strong>@_translations["Food.Area"]</strong> @(string.IsNullOrEmpty(meal.StrArea) ? _translations["Food.Unknown"] : meal.StrArea)</p>
+                <p><strong>@GetTranslation("Food.Category")</strong> @(string.IsNullOrEmpty(meal.StrCategory) ? GetTranslation("Food.Unknown") : meal.StrCategory)</p>
+                <p><strong>@GetTranslation("Food.Area")</strong> @(string.IsNullOrEmpty(meal.StrArea) ? GetTranslation("Food.Unknown") : meal.StrArea)</p>
 
-                <p><strong>@_translations["Food.Instructions"]</strong></p>
+                <p><strong>@GetTranslation("Food.Instructions")</strong></p>
                 <p>
                     @(meal is { StrInstructions.Length: > 150, ShowFullInstructions: false }
                         ? meal.StrInstructions[..150] + "..."
                         : meal.StrInstructions)
                 </p>
                 <button @onclick="() => ToggleInstructions(meal)">
-                    @(meal.ShowFullInstructions ? _translations["Food.ShowLess"] : _translations["Food.ShowMore"])
+                    @(meal.ShowFullInstructions ? GetTranslation("Food.ShowLess") : GetTranslation("Food.ShowMore"))
                 </button>
 
-                <h5>@_translations["Food.Ingredients"]</h5>
+                <h5>@GetTranslation("Food.Ingredients")</h5>
                 <ul>
-                    @for (var i = 0; i < meal.Ingredients.Count; i++)
+                    @foreach (var i in meal.MealDetails.Ingredients.Keys)
                     {
-                        <li>@meal.Ingredients[i] - @meal.Measures[i]</li>
+                        <li>@meal.MealDetails.Ingredients[i] - @meal.MealDetails.Measures.GetValueOrDefault(i, "")</li>
                     }
                 </ul>
 
-                <a href="@meal.StrYoutube" target="_blank" class="youtube-link">@_translations["Food.WatchOnYouTube"]</a>
+                <a href="@meal.StrYoutube" target="_blank" class="youtube-link">@GetTranslation("Food.WatchOnYouTube")</a>
             </div>
         }
     </div>
 }
 
 @code {
-	private string _query = string.Empty;
-	private List<Meal> _meals = [];
-	private Dictionary<string, string> _translations = new();
+    private string _query = string.Empty;
+    private List<Meal> _meals = new();
+    private string? _errorMessage;
+    private bool _isLoading = false;
+    private Dictionary<string, string> _translations = new();
 
-	protected override async Task OnInitializedAsync()
-	{
-		var keys = new[]
-		{
-			"Food.PageTitle", "Food.SearchPrompt", "Food.SearchButton", "Food.Loading", "Food.NoRecipesFound",
-			"Food.UnknownMeal", "Food.Category", "Food.Area", "Food.Instructions", "Food.ShowMore",
-			"Food.ShowLess", "Food.Ingredients", "Food.WatchOnYouTube", "Food.Unknown"
-		};
+    protected override async Task OnInitializedAsync()
+    {
+        _translations = await TranslationService.GetAllTranslationsAsync("en");
+    }
 
-		_translations = await TranslationService.GetTranslationsAsync("en", keys);
-	}
+    private async Task SearchRecipes()
+    {
+        _isLoading = true;
+        try
+        {
+            var response = await ApiClient.GetRecipesAsync(_query);
 
-	private async Task SearchRecipes()
-	{
-		var response = await ApiClient.GetRecipesAsync(_query);
-		if (response?.Meals != null)
-		{
-			_meals = response.Meals;
-			foreach (var meal in _meals)
-			{
-				meal.ShowFullInstructions = false;
-			}
-		}
-		else
-		{
-			_meals = [];
-		}
-	}
+            if (response?.Meals != null)
+            {
+                _meals.Clear();
 
-	private void ToggleInstructions(Meal meal)
-	{
-		meal.ShowFullInstructions = !meal.ShowFullInstructions;
-	}
+                foreach (var meal in response.Meals)
+                {
+                    meal?.InitializeDetailsFromJson(JsonSerializer.SerializeToElement(meal));
+                    if (meal != null)
+                    {
+                        _meals.Add(meal);
+                    }
+                }
+                _errorMessage = null;
+            }
+            else
+            {
+                _meals = new List<Meal>();
+                _errorMessage = GetTranslation("Food.NoRecipesFound");
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = GetTranslation("Food.ErrorOccurred");
+            Console.Error.WriteLine(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void ToggleInstructions(Meal meal)
+    {
+        meal.ShowFullInstructions = !meal.ShowFullInstructions;
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchRecipes();
+        }
+    }
+
+    private string GetTranslation(string key)
+    {
+        return _translations.GetValueOrDefault(key, "Not Found");
+    }
 }

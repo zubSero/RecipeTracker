@@ -3,8 +3,9 @@ using RecipeTracker.Web.API.Translations.Interface;
 
 namespace RecipeTracker.Web.API.Translations;
 
-public class TranslationService(ApplicationDbContext context) : ITranslationService
+public class TranslationService(TranslationDbContext context) : ITranslationService
 {
+    // Retrieve a specific translation by key and language code
     public async Task<string?> GetTranslationAsync(string key, string languageCode)
     {
         return await context.Translations
@@ -13,37 +14,19 @@ public class TranslationService(ApplicationDbContext context) : ITranslationServ
             .FirstOrDefaultAsync();
     }
 
-    public async Task AddOrUpdateTranslationAsync(Translation translation)
+    // Retrieve translations dynamically based on a search term
+    public async Task<Dictionary<string, string>> SearchTranslationsAsync(string languageCode, string searchTerm)
     {
-        var existingTranslation = await context.Translations
-            .FirstOrDefaultAsync(t => t.Key == translation.Key && t.LanguageCode == translation.LanguageCode);
-
-        if (existingTranslation != null)
-        {
-            existingTranslation.Value = translation.Value;
-            context.Translations.Update(existingTranslation);
-        }
-        else
-        {
-            context.Translations.Add(translation);
-        }
-
-        await context.SaveChangesAsync();
+        return await context.Translations
+            .Where(t => t.LanguageCode == languageCode && t.Key.Contains(searchTerm))
+            .ToDictionaryAsync(t => t.Key, t => t.Value);
     }
 
-    public async Task<IEnumerable<Translation>> GetAllTranslationsAsync(string languageCode)
+    // Optional: Retrieve all translations for a specific language code
+    public async Task<Dictionary<string, string>> GetAllTranslationsAsync(string languageCode)
     {
         return await context.Translations
             .Where(t => t.LanguageCode == languageCode)
-            .ToListAsync();
-    }
-
-    public async Task<Dictionary<string, string>> GetTranslationsAsync(string languageCode, IEnumerable<string> keys)
-    {
-        var translations = await context.Translations
-            .Where(t => t.LanguageCode == languageCode && keys.Contains(t.Key))
             .ToDictionaryAsync(t => t.Key, t => t.Value);
-
-        return keys.ToDictionary(key => key, key => translations.GetValueOrDefault(key, key));
     }
 }
