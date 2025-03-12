@@ -1,12 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RecipeTracker.Web.API.Models;
+using RecipeTracker.Web.API.Translations;
 
-namespace RecipeTracker.Web.API
+namespace RecipeTracker.Web.API;
+
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
-    {
-        public DbSet<Meal> Meals { get; set; }
+    public DbSet<Translation> Translations { get; set; }
 
-        // Add more DbSets as needed for other models
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Translation>()
+            .Property(t => t.Id)
+            .ValueGeneratedNever(); // Ensure EF Core does not treat it as auto-generated
+
+        modelBuilder.Entity<Translation>().HasData(
+                modelBuilder.Entity<Translation>().HasData(TranslationSeedData.GetSeedData())
+        );
     }
 }

@@ -1,5 +1,6 @@
 ﻿using RecipeTracker.Web.API.Models.Interfaces;
 using RecipeTracker.Web.API.Models.Responses;
+using RecipeTracker.Web.API.Translations.Interface;
 
 namespace RecipeTracker.Web.API
 {
@@ -7,10 +8,13 @@ namespace RecipeTracker.Web.API
         HttpClient httpClient,
         IConfiguration configuration,
         ILogger<TheMealDbApiClient> logger,
-        IApiResponseDeserializer responseDeserializer)
+        IApiResponseDeserializer responseDeserializer,
+        ITranslationService translationService
+        )
     {
         private readonly string _baseUrl = configuration["MealDbApi:BaseUrl"]
-                                           ?? throw new ArgumentNullException(nameof(configuration), "MealDbApi:BaseUrl not found in configuration.");
+                                           ?? throw new ArgumentNullException(nameof(configuration),
+                                               translationService.GetTranslationAsync("MealDbApi.BaseUrl.Missing", "en").Result);
 
         // Primary constructor to inject dependencies
         // Use the parameter name directly in the exception constructor
@@ -20,20 +24,23 @@ namespace RecipeTracker.Web.API
         {
             if (string.IsNullOrEmpty(query))
             {
-                logger.LogWarning("Search query is empty or null.");
+                logger.LogWarning(await translationService.GetTranslationAsync("Search.Query.Empty", "en"));
                 return null;
             }
 
             var url = $"{_baseUrl}search.php?s={query}";
 
             var response = await httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
-            {
-                logger.LogError($"Request failed with status code: {response.StatusCode}. URL: {url}");
-                return null;
-            }
+            if (response.IsSuccessStatusCode) return await responseDeserializer.DeserializeResponseAsync(response);
 
-            return await responseDeserializer.DeserializeResponseAsync(response);
+            var s = await translationService.GetTranslationAsync("Request.Failed", "en") ?? string.Empty;
+
+            logger.LogError(string.Format(
+                s,
+                response.StatusCode, url));
+
+            return null;
         }
+
     }
 }

@@ -20,13 +20,18 @@ builder.Services.AddRazorPages();  // This adds Razor Pages support
 // Load the configuration from appsettings.json
 var apiBaseUrl = builder.Configuration["MealDbApi:BaseUrl"];  // Reads the base URL from the configuration file
 
-builder.Services.AddSingleton<IApiResponseDeserializer,ApiResponseDeserializer>();
+builder.Services.AddSingleton<IApiResponseDeserializer, ApiResponseDeserializer>();
 
 // Register TheMealDbApiClient as a scoped service
 builder.Services.AddHttpClient<TheMealDbApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl); // Use the URL from the configuration
 });
+
+// Register ApplicationDbContext with PostgreSQL
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
 var app = builder.Build();
 
@@ -37,11 +42,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAntiforgery();
-
 app.UseOutputCache();
-
 app.MapStaticAssets();
 
 // Map Razor Components (this is for server-side Blazor)
@@ -53,5 +55,19 @@ app.MapGet("/", () => Results.Redirect("/food"));
 
 // Add default endpoints
 app.MapDefaultEndpoints();
+
+// Ensure Database is Migrated and Seeded on Startup
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    // Apply any pending migrations
+    if (dbContext.Database.GetPendingMigrations().Any())
+    {
+        dbContext.Database.EnsureCreated();
+        dbContext.Database.Migrate();
+    }
+}
+
 
 app.Run();
