@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using RecipeTracker.Web.API.Models.Interfaces;
+using RecipeTracker.ApiService.Service.External.Interfaces;
 
-namespace RecipeTracker.Web.API.Models.Responses;
+namespace RecipeTracker.ApiService.Service.External.Responses;
 
 public class ApiResponseDeserializer: IApiResponseDeserializer
 {

@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RecipeTracker.ServiceDefaults\RecipeTracker.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\RecipeTracker.Web\RecipeTracker.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace RecipeTracker.Web.API.Models
+namespace RecipeTracker.ApiService.Models.External
 {
     public class MealDetails
     {

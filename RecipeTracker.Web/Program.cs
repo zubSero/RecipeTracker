@@ -1,49 +1,41 @@
-using Microsoft.EntityFrameworkCore;
 using RecipeTracker.ServiceDefaults;
 using RecipeTracker.Web.API;
-using RecipeTracker.Web.API.Models.Interfaces;
-using RecipeTracker.Web.API.Models.Responses;
 using RecipeTracker.Web.API.Translations;
 using RecipeTracker.Web.API.Translations.Interface;
 using RecipeTracker.Web.Components;
 using StackExchange.Redis;
 using System.Text.Json;
+using Microsoft.AspNetCore.Components;
+// Note: Removed using references for API internal services since they now run on a separate host.
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add service defaults & Aspire client integrations
+// -----------------------------------------------------------------------------
+// 1. Add Aspire service defaults & Redis output cache
+// -----------------------------------------------------------------------------
 builder.AddServiceDefaults();
 builder.AddRedisOutputCache("cache");
 
-// Register necessary services for Razor Pages and Blazor
+// -----------------------------------------------------------------------------
+// 2. Register services for Razor Pages, Blazor, and Translations
+// -----------------------------------------------------------------------------
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents(); // For Blazor components
-
-builder.Services.AddRazorPages();  // This adds Razor Pages support
-
-// Load the configuration from appsettings.json
-var apiBaseUrl = builder.Configuration["MealDbApi:BaseUrl"];  // Reads the base URL from the configuration file
-
-builder.Services.AddSingleton<IApiResponseDeserializer, ApiResponseDeserializer>();
+builder.Services.AddRazorPages();
 builder.Services.AddScoped<ITranslationService, TranslationService>();
 
-// Register TheMealDbApiClient as a scoped service
-builder.Services.AddHttpClient<TheMealDbApiClient>(client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl); // Use the URL from the configuration
-});
-
-// Register TranslationDbContext
+// Register TranslationDbContext (using "postgresdb" connection key)
 builder.AddNpgsqlDbContext<TranslationDbContext>("postgresdb");
-// Preload translations into Redis and shared memory cache at startup
-// Initialize the shared memory cache
+
+// -----------------------------------------------------------------------------
+// 3. Preload translations into Redis and shared memory cache at startup
+// -----------------------------------------------------------------------------
 var translationsCache = new Dictionary<string, Dictionary<string, string>>();
 
-// Use a temporary service provider to preload translations
 using (var scope = builder.Services.BuildServiceProvider().CreateScope())
 {
     var translationService = scope.ServiceProvider.GetRequiredService<ITranslationService>();
-    var supportedLocales = new[] { "en", "es", "fr" }; // Add your supported locales
+    var supportedLocales = new[] { "en", "es", "fr" };
 
     foreach (var locale in supportedLocales)
     {
@@ -54,13 +46,36 @@ using (var scope = builder.Services.BuildServiceProvider().CreateScope())
         await redis.StringSetAsync(
             $"translations:{locale}",
             JsonSerializer.Serialize(translations),
-            TimeSpan.FromDays(7) // Expiration for Redis cache
+            TimeSpan.FromDays(7)
         );
     }
 }
 
 // Register the preloaded translations cache as a singleton service
 builder.Services.AddSingleton(translationsCache);
+
+// -----------------------------------------------------------------------------
+// 4. Remove direct API service registrations (TheMealDbApiClient, IRecipeService, etc.)
+//    Instead, register an HttpClient for the standalone API host.
+// -----------------------------------------------------------------------------
+var apiStandaloneHost = builder.Configuration.GetConnectionString("ApiStandaloneHost");
+if (string.IsNullOrWhiteSpace(apiStandaloneHost))
+{
+    throw new InvalidOperationException("ApiStandaloneHost is not configured.");
+}
+builder.Services.AddHttpClient("ApiHost", client =>
+{
+    client.BaseAddress = new Uri(apiStandaloneHost);
+});
+
+// -----------------------------------------------------------------------------
+// 5. Register a default HttpClient using NavigationManager for internal links
+// -----------------------------------------------------------------------------
+builder.Services.AddScoped(sp =>
+{
+    var navigation = sp.GetRequiredService<NavigationManager>();
+    return new HttpClient { BaseAddress = new Uri(navigation.BaseUri) };
+});
 
 var app = builder.Build();
 
@@ -75,15 +90,16 @@ app.UseAntiforgery();
 app.UseOutputCache();
 app.MapStaticAssets();
 
-// Map Razor Components (this is for server-side Blazor)
+// -----------------------------------------------------------------------------
+// 6. Map Razor Components (for Blazor) and default endpoints
+// -----------------------------------------------------------------------------
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
-// Redirect root to /food (default route)
+app.MapRazorPages();
 app.MapGet("/", () => Results.Redirect("/food"));
-
-// Add default endpoints
 app.MapDefaultEndpoints();
+
+// (Optional) Create the database if necessary.
 app.CreateDbIfNotExists();
 
 app.Run();

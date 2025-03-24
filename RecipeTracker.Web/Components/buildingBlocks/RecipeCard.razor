@@ -1,57 +1,65 @@
 ﻿@rendermode InteractiveServer
-@using RecipeTracker.Web.API.Models
+@using RecipeTracker.ApiService.Models.Internal
 <article class="card">
-	<figure>
-		<img src="@(Meal?.StrMealThumb ?? "default-image.jpg")"
-		     alt="@(Meal?.StrMeal ?? Translations["Food.UnknownMealName"])" loading="lazy" />
-	</figure>
+    <figure>
+        <img src="@(Recipe?.Thumbnail ?? "default-image.jpg")"
+             alt="@(Recipe?.Name ?? Translations["Food.UnknownMealName"])" loading="lazy" />
+    </figure>
 
-	<div>
-		<h4>@(Meal?.StrMeal ?? Translations["Food.UnknownMealName"])</h4>
+    <div>
+        <h4>@(Recipe?.Name ?? Translations["Food.UnknownMealName"])</h4>
 
-		<p><strong>@Translations["Food.MealCategory"]:</strong> @(Meal?.StrCategory ?? Translations["Food.UnknownCategory"])</p>
-		<p><strong>@Translations["Food.MealArea"]:</strong> @(Meal?.StrArea ?? Translations["Food.UnknownCategory"])</p>
+        <p>
+            <strong>@Translations["Food.MealCategory"]:</strong>
+            @(Recipe?.Category ?? Translations["Food.UnknownCategory"])
+        </p>
+        <p>
+            <strong>@Translations["Food.MealArea"]:</strong>
+            @(Recipe?.Area ?? Translations["Food.UnknownCategory"])
+        </p>
 
-		<p>
-			@(Meal is { StrInstructions.Length: > 150, ShowFullInstructions: false }
-				? Meal.StrInstructions[..150] + "..."
-				: Meal.StrInstructions ?? Translations["Food.NoInstructionsAvailable"])
-		</p>
+        <p>
+            @(Recipe is { Instructions.Length: > 150, ShowFullInstructions: false }
+                ? Recipe.Instructions[..150] + "..."
+                : Recipe?.Instructions ?? Translations["Food.NoInstructionsAvailable"])
+        </p>
 
-		<button @onclick="ToggleInstructions">
-			@(Meal?.ShowFullInstructions == true
-				? Translations["Food.ShowLessInstructions"]
-				: Translations["Food.ShowMoreInstructions"])
-		</button>
+        <button @onclick="ToggleInstructions">
+            @(Recipe?.ShowFullInstructions == true
+                ? Translations["Food.ShowLessInstructions"]
+                : Translations["Food.ShowMoreInstructions"])
+        </button>
 
-		@if (Meal?.MealDetails?.Ingredients?.Count > 0)
-		{
-			<h5>@Translations["Food.IngredientsSection"]</h5>
-			<ul>
-				@foreach (var key in Meal.MealDetails.Ingredients.Keys)
-				{
-					<li>@Meal.MealDetails.Ingredients[key] - @(Meal.MealDetails.Measures.GetValueOrDefault(key, ""))</li>
-				}
-			</ul>
-		}
+        @if (Recipe?.Ingredients?.Any() == true)
+        {
+            <h5>@Translations["Food.IngredientsSection"]</h5>
+            <ul>
+                @foreach (var item in Recipe.Ingredients)
+                {
+                    <li>@item.Ingredient - @item.Measure</li>
+                }
+            </ul>
+        }
 
-		@if (!string.IsNullOrEmpty(Meal?.StrYoutube))
-		{
-			<a href="@Meal.StrYoutube" target="_blank">
-				@Translations["Food.WatchOnYouTubeLink"]
-			</a>
-		}
-	</div>
+        @if (!string.IsNullOrEmpty(Recipe?.Youtube))
+        {
+            <a href="@Recipe.Youtube" target="_blank">
+                @Translations["Food.WatchOnYouTubeLink"]
+            </a>
+        }
+    </div>
 </article>
 
-
 @code {
-    [Parameter, EditorRequired] public Meal Meal { get; set; } = null!;
-    [Parameter, EditorRequired] public Dictionary<string, string> Translations { get; set; } = new();
+    [Parameter, EditorRequired]
+    public RecipeModel Recipe { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public Dictionary<string, string> Translations { get; set; } = new();
 
     private void ToggleInstructions()
     {
-        Meal.ShowFullInstructions = !Meal.ShowFullInstructions;
+        Recipe.ShowFullInstructions = !Recipe.ShowFullInstructions;
         StateHasChanged();
     }
 }

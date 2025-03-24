@@ -1,10 +1,10 @@
 @page "/food"
 @using System.Text.Json
-@using RecipeTracker.Web.API
-@using RecipeTracker.Web.API.Models
+@using RecipeTracker.ApiService.Models.Internal  
 @using RecipeTracker.Web.Components.buildingBlocks
 @inject Dictionary<string, Dictionary<string, string>> TranslationsCache
-@inject TheMealDbApiClient ApiClient
+@inject HttpClient Http
+@inject IHttpClientFactory ClientFactory
 @rendermode InteractiveServer
 
 <PageTitle>@TranslationsCache["en"]["Food.PageTitle"]</PageTitle>
@@ -20,70 +20,64 @@
 {
     <p class="error-message">@_errorMessage</p>
 }
-else if (_meals == null)
+else if (_recipes == null)
 {
     <p>@TranslationsCache["en"]["Food.Loading"]</p>
 }
-else if (_meals.Count == 0)
+else if (_recipes.Count == 0)
 {
     <p>@TranslationsCache["en"]["Food.NoRecipesFoundMessage"]</p>
 }
 else
 {
     <div class="recipe-cards grid-container">
-        @foreach (var meal in _meals)
+        @foreach (var recipe in _recipes)
         {
-            <RecipeCard Meal="meal" Translations="@TranslationsCache["en"]" />
+            <RecipeCard Recipe="recipe" Translations="@TranslationsCache["en"]" />
         }
     </div>
 }
 
 @code {
-    private string _query = string.Empty; // User input for search
-    private List<Meal> _meals = []; // Meal results from API
-    private string? _errorMessage; // Error message for the user
-    private bool _isLoading; // Loading state for the search process
+    private string _query = string.Empty;    // User input for search
+    // Changed from _meals (List<Meal>) to _recipes (List<RecipeModel>)
+    private List<RecipeModel> _recipes = new();
+    private string? _errorMessage;             // Error message for the user
+    private bool _isLoading;                   // Loading state for the search process
 
     private async Task SearchRecipes(string query)
     {
-	    if (_isLoading) return;
+        if (_isLoading) return;
 
-	    _isLoading = true;
-	    StateHasChanged(); // Trigger UI update for loading state
+        _isLoading = true;
+        StateHasChanged(); // Trigger UI update for loading state
 
-	    try
-	    {
-		    var response = await ApiClient.GetRecipesAsync(query);
+        try
+        {
+	        var client = ClientFactory.CreateClient("ApiHost");
+	        var url = $"/api/recipes?query={Uri.EscapeDataString(query)}";
+	        var recipes = await client.GetFromJsonAsync<List<RecipeModel>>(url);
 
-		    if (response?.Meals != null)
-		    {
-			    _meals.Clear();
-
-			    foreach (var meal in response.Meals)
-			    {
-				    meal.InitializeDetailsFromJson(JsonSerializer.SerializeToElement(meal));
-				    _meals.Add(meal);
-			    }
-			    _errorMessage = null;
-		    }
-		    else
-		    {
-			    // Show "No recipes found" message if no results
-			    _meals = new List<Meal>();
-			    _errorMessage = TranslationsCache["en"]["Food.NoRecipesFoundMessage"];
-		    }
-	    }
-	    catch (Exception ex)
-	    {
-		    // Handle any errors and log them
-		    _errorMessage = TranslationsCache["en"]["Food.ErrorOccurred"];
-		    Console.Error.WriteLine(ex);
-	    }
-	    finally
-	    {
-		    _isLoading = false;
-		    StateHasChanged(); // Trigger UI update after search completion
-	    }
+            if (recipes != null && recipes.Any())
+            {
+                _recipes = recipes;
+                _errorMessage = null;
+            }
+            else
+            {
+                _recipes = [];
+                _errorMessage = TranslationsCache["en"]["Food.NoRecipesFoundMessage"];
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = TranslationsCache["en"]["Food.ErrorOccurred"];
+            Console.Error.WriteLine(ex);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged(); // Trigger UI update after search completion
+        }
     }
-
 }

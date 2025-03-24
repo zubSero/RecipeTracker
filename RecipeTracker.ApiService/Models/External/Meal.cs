@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RecipeTracker.Web.API.Models
+namespace RecipeTracker.ApiService.Models.External
 {
     public class Meal
     {
@@ -116,8 +116,6 @@ namespace RecipeTracker.Web.API.Models
         [JsonPropertyName("strMeasure20")]
         public string? StrMeasure20 { get; set; }
 
-        //helper prop to show/hide instructions
-        public bool ShowFullInstructions { get; set; }
 
         // A separate container for dynamic ingredients and measures
         public MealDetails MealDetails { get; set; } = new();

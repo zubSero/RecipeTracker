@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
+using RecipeTracker.ApiService.Models.External;
 
-namespace RecipeTracker.Web.API.Models.Responses;
+namespace RecipeTracker.ApiService.Service.External.Responses;
 
 public class ApiResponse
 {

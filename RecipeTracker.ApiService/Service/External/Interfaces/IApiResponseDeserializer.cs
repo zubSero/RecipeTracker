@@ -1,6 +1,6 @@
-﻿using RecipeTracker.Web.API.Models.Responses;
+﻿using RecipeTracker.ApiService.Service.External.Responses;
 
-namespace RecipeTracker.Web.API.Models.Interfaces;
+namespace RecipeTracker.ApiService.Service.External.Interfaces;
 
 public interface IApiResponseDeserializer
 {
