@@ -1,0 +1,57 @@
+﻿@rendermode InteractiveServer
+@using RecipeTracker.Web.API.Models
+<article class="card">
+	<figure>
+		<img src="@(Meal?.StrMealThumb ?? "default-image.jpg")"
+		     alt="@(Meal?.StrMeal ?? Translations["Food.UnknownMealName"])" loading="lazy" />
+	</figure>
+
+	<div>
+		<h4>@(Meal?.StrMeal ?? Translations["Food.UnknownMealName"])</h4>
+
+		<p><strong>@Translations["Food.MealCategory"]:</strong> @(Meal?.StrCategory ?? Translations["Food.UnknownCategory"])</p>
+		<p><strong>@Translations["Food.MealArea"]:</strong> @(Meal?.StrArea ?? Translations["Food.UnknownCategory"])</p>
+
+		<p>
+			@(Meal is { StrInstructions.Length: > 150, ShowFullInstructions: false }
+				? Meal.StrInstructions[..150] + "..."
+				: Meal.StrInstructions ?? Translations["Food.NoInstructionsAvailable"])
+		</p>
+
+		<button @onclick="ToggleInstructions">
+			@(Meal?.ShowFullInstructions == true
+				? Translations["Food.ShowLessInstructions"]
+				: Translations["Food.ShowMoreInstructions"])
+		</button>
+
+		@if (Meal?.MealDetails?.Ingredients?.Count > 0)
+		{
+			<h5>@Translations["Food.IngredientsSection"]</h5>
+			<ul>
+				@foreach (var key in Meal.MealDetails.Ingredients.Keys)
+				{
+					<li>@Meal.MealDetails.Ingredients[key] - @(Meal.MealDetails.Measures.GetValueOrDefault(key, ""))</li>
+				}
+			</ul>
+		}
+
+		@if (!string.IsNullOrEmpty(Meal?.StrYoutube))
+		{
+			<a href="@Meal.StrYoutube" target="_blank">
+				@Translations["Food.WatchOnYouTubeLink"]
+			</a>
+		}
+	</div>
+</article>
+
+
+@code {
+    [Parameter, EditorRequired] public Meal Meal { get; set; } = null!;
+    [Parameter, EditorRequired] public Dictionary<string, string> Translations { get; set; } = new();
+
+    private void ToggleInstructions()
+    {
+        Meal.ShowFullInstructions = !Meal.ShowFullInstructions;
+        StateHasChanged();
+    }
+}

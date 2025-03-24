@@ -1,0 +1,64 @@
+﻿/* General card styling */
+.card {
+    background-color: #2b2b2b; /* Dark card background */
+    color: #dcdcdc;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Image styling */
+.card img {
+    width: 100%;
+    max-height: 15rem;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}
+
+/* Title styling */
+.card h4 {
+    color: #ffffff;
+    font-size: 1.25rem; /* Relative font size */
+    margin: 0;
+}
+
+/* Paragraph styling */
+.card p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Button styling */
+.card button {
+    background-color: #03a9f4;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.card button:hover {
+    background-color: #0288d1;
+}
+
+/* Link styling */
+.card a {
+    color: #03a9f4;
+    text-decoration: none;
+}
+
+.card a:hover {
+    text-decoration: underline;
+}
+
+/* Recipe card grid layout */
+.recipe-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); /* Flexible grid layout */
+    gap: 1rem;
+    padding: 1rem;
+}

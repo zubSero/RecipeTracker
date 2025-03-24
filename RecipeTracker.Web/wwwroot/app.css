@@ -15,109 +15,6 @@ a {
     color: #03a9f4; /* Blue color for links in dark theme */
 }
 
-/* Search Bar Styles */
-.search-bar {
-    margin: 2rem 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-
-.search-input {
-    padding: 0.5rem 1rem;
-    margin-right: 0.5rem;
-    border: 2px solid #444;
-    background-color: #333;
-    color: #fff;
-    border-radius: 0.25rem;
-    width: 100%;
-    max-width: 30rem; /* Max width for the search input */
-}
-
-.search-button {
-    padding: 0.5rem 1rem;
-    background-color: #1b6ec2;
-    color: #fff;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-}
-
-    .search-button:hover {
-        background-color: #1861ac;
-    }
-
-/* Recipe Cards Grid */
-.recipe-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); /* Flexible grid layout */
-    gap: 1rem;
-    padding: 1rem;
-    width: 100%;
-}
-
-.card {
-    background-color: #2b2b2b; /* Dark card background */
-    padding: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.5); /* Subtle shadow */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%; /* Ensure cards take full available height */
-}
-
-.card-image {
-    width: 100%;
-    max-height: 15rem;
-    object-fit: cover;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem; /* Space between image and content */
-}
-
-.card h4 {
-    color: #ffffff;
-    font-size: 1.25rem; /* Relative font size */
-    margin: 0 0 0.5rem; /* Space below the title */
-}
-
-.card p {
-    color: #dcdcdc;
-    font-size: 1rem; /* Relative font size for text */
-    margin: 0 0 0.5rem; /* Space below paragraphs */
-}
-
-.card a {
-    color: #03a9f4;
-    text-decoration: none;
-    margin-top: 1rem;
-}
-
-    .card a:hover {
-        text-decoration: underline;
-    }
-
-.card button {
-    background-color: #03a9f4;
-    color: #ffffff;
-    border: none;
-    padding: 0.5rem;
-    cursor: pointer;
-    border-radius: 0.25rem;
-    margin-top: 1rem; /* Space between ingredients and button */
-}
-
-    .card button:hover {
-        background-color: #0288d1;
-    }
-
-.youtube-link {
-    display: inline-block;
-    color: #03a9f4;
-    margin-top: 1rem;
-}
-
 /* Loading and No Recipes Found States */
 .loading, .no-recipes {
     color: #ffffff;
@@ -144,6 +41,6 @@ a {
     margin: 2rem 0;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred.";
-    }
+.blazor-error-boundary::after {
+    content: "An error has occurred.";
+}

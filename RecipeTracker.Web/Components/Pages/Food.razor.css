@@ -7,27 +7,3 @@ body {
 h1, h2, h3, h4, h5, h6 {
     color: var(--text-color); /* Light text color for headings */
 }
-
-/* Adjusting the cards in the Razor page for the dark theme */
-.recipe-cards .card {
-    background-color: var(--card-background);
-    color: var(--text-color);
-}
-
-    /* Button styles */
-    .recipe-cards .card button {
-        background-color: var(--btn-background);
-        border-color: var(--btn-background);
-    }
-
-        .recipe-cards .card button:hover {
-            background-color: var(--btn-hover-background);
-        }
-
-    .recipe-cards .card a {
-        color: var(--link-color);
-    }
-
-        .recipe-cards .card a:hover {
-            color: var(--link-hover-color);
-        }
