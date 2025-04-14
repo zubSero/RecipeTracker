@@ -51,11 +51,11 @@
 </article>
 
 @code {
-    [Parameter, EditorRequired]
-    public RecipeModel Recipe { get; set; } = null!;
+	[Parameter, EditorRequired]
+	public RecipeModel Recipe { get; set; } = null!;
 
-    [Parameter, EditorRequired]
-    public Dictionary<string, string> Translations { get; set; } = new();
+	[Parameter, EditorRequired]
+	public IReadOnlyDictionary<string, string> Translations { get; set; } = new Dictionary<string, string>();
 
     private void ToggleInstructions()
     {

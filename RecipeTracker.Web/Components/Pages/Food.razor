@@ -1,101 +1,38 @@
 @page "/food"
-@using RecipeTracker.ApiService.API
-@using RecipeTracker.ApiService.Models.Internal
-@using RecipeTracker.ApiService.Translations
 @using RecipeTracker.Web.Components.buildingBlocks
-@inject TranslationCacheHolder CacheHolder
-@inject RecipesApiClient RecipesApiClient
-@rendermode InteractiveServer
+@inherits FoodBase
 
-<PageTitle>@CacheHolder.Cache["en"]["Food.PageTitle"]</PageTitle>
+<PageTitle>@t["Food.PageTitle"]</PageTitle>
 
-<h3>@CacheHolder.Cache["en"]["Food.PageTitle"]</h3>
+<h3>@t["Food.PageTitle"]</h3>
 
 <!-- Search Bar Component to trigger search action and display loading state -->
-<SearchBar Query="@_query"
+<SearchBar Query="@Query"
            OnSearch="@SearchRecipes"
-           IsLoading="@_isLoading"
-           Translations="@CacheHolder.Cache["en"]" />
+           IsLoading="@IsLoading"
+           Translations="@t" />
 
-@if (_errorMessage != null)
+@if (ErrorMessage != null)
 {
-    <p class="error-message">@_errorMessage</p>
+	<p class="error-message">@ErrorMessage</p>
 }
-else if (_recipes == null)
+else if (Recipes == null)
 {
-    <!-- Show loading message while waiting for recipes -->
-    <p>@CacheHolder.Cache["en"]["Food.Loading"]</p>
+	<!-- Show loading message while waiting for recipes -->
+	<p>@t["Food.Loading"]</p>
 }
-else if (_recipes.Count == 0)
+else if (Recipes.Count == 0)
 {
-    <!-- Display no recipes message if no results found -->
-    <p>@CacheHolder.Cache["en"]["Food.NoRecipesFoundMessage"]</p>
+	<!-- Display no recipes message if no results found -->
+	<p>@t["Food.NoRecipesFoundMessage"]</p>
 }
 else
 {
-    <!-- Render recipe cards if recipes are available -->
-    <div class="recipe-cards grid-container">
-        @foreach (var recipe in _recipes)
-        {
-            <RecipeCard Recipe="recipe" Translations="@CacheHolder.Cache["en"]" />
-        }
-    </div>
-}
-
-@code {
-    // User input for search query
-    private string _query = string.Empty;
-    
-    // List to store fetched recipes
-    private List<RecipeModel> _recipes = new();
-    
-    // Error message to display in case of failure
-    private string? _errorMessage;
-    
-    // Loading state for the search process
-    private bool _isLoading;
-
-    /// <summary>
-    /// Handles the recipe search logic triggered by the user input.
-    /// It calls the RecipesApiClient to fetch the recipes and updates the UI state accordingly.
-    /// </summary>
-    /// <param name="query">The search query entered by the user.</param>
-    private async Task SearchRecipes(string query)
-    {
-        // Prevent duplicate searches if already loading
-        if (_isLoading) return;
-
-        // Set loading state to true and update the UI
-        _isLoading = true;
-        StateHasChanged();
-
-        try
-        {
-            // Fetch recipes using the RecipesApiClient
-            _recipes = await RecipesApiClient.SearchAsync(query);
-
-            // Handle successful response: recipes found
-            if (_recipes != null && _recipes.Any())
-            {
-                _errorMessage = null;
-            }
-            else
-            {
-                // If no recipes found, show appropriate message
-                _errorMessage = CacheHolder.Cache["en"]["Food.NoRecipesFoundMessage"];
-            }
-        }
-        catch (Exception ex)
-        {
-            // Handle any errors that occur during the API call
-            _errorMessage = CacheHolder.Cache["en"]["Food.ErrorOccurred"];
-            Console.Error.WriteLine(ex); // Log the error for debugging
-        }
-        finally
-        {
-            // Set loading state to false and update the UI once the search is complete
-            _isLoading = false;
-            StateHasChanged();
-        }
-    }
+	<!-- Render recipe cards if recipes are available -->
+	<div class="recipe-cards grid-container">
+		@foreach (var recipe in Recipes)
+		{
+			<RecipeCard Recipe="recipe" Translations="@t" />
+		}
+	</div>
 }
