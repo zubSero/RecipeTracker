@@ -1,4 +1,8 @@
-﻿namespace RecipeTracker.Web.API.Translations;
+﻿using RecipeTracker.ApiService.DB;
+using RecipeTracker.Web.API;
+using RecipeTracker.Web.API.Translations;
+
+namespace RecipeTracker.ApiService.Translations;
 
 public static class TranslationSeedData
 {
@@ -7,7 +11,7 @@ public static class TranslationSeedData
         if (context.Translations.Any())
             return;
 
-        var products = new List<Translation>
+        var products = new List<TranslationModel>
         {
             new() { Id = 1, LanguageCode = "en", Key = "MealDbApi.BaseUrl.Missing", Value = "MealDbApi:BaseUrl not found in configuration." },
             new() { Id = 2, LanguageCode = "en", Key = "Search.Query.Empty", Value = "Search query is empty or null." },

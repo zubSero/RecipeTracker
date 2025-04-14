@@ -2,6 +2,7 @@
 using RecipeTracker.Web.API.Translations.Interface;
 using StackExchange.Redis;
 using System.Text.Json;
+using RecipeTracker.ApiService.DB;
 
 namespace RecipeTracker.Web.API.Translations;
 

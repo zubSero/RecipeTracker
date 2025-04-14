@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RecipeTracker.ApiService.Translations;
 using RecipeTracker.Web.API.Translations;
 
-namespace RecipeTracker.Web.API;
+namespace RecipeTracker.ApiService.DB;
 
 public class TranslationDbContext(DbContextOptions<TranslationDbContext> options) : DbContext(options)
 {
-    public DbSet<Translation> Translations { get; set; }
+    public DbSet<TranslationModel> Translations { get; set; }
 }
 
 public static class Extensions

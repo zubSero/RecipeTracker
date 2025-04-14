@@ -1,6 +1,6 @@
 ﻿namespace RecipeTracker.Web.API.Translations;
 
-public class Translation
+public class TranslationModel
 {
     public int Id { get; set; }
     public string LanguageCode { get; set; } = string.Empty; // e.g., "en", "fr"

@@ -3,9 +3,12 @@ using RecipeTracker.Web.API;
 using RecipeTracker.Web.API.Translations;
 using RecipeTracker.Web.API.Translations.Interface;
 using RecipeTracker.Web.Components;
-using StackExchange.Redis;
-using System.Text.Json;
 using Microsoft.AspNetCore.Components;
+using RecipeTracker.ApiService.API;
+using RecipeTracker.ApiService.DB;
+using RecipeTracker.ApiService.Service.Internal;
+using RecipeTracker.ApiService.Translations;
+
 // Note: Removed using references for API internal services since they now run on a separate host.
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,31 +31,10 @@ builder.Services.AddScoped<ITranslationService, TranslationService>();
 builder.AddNpgsqlDbContext<TranslationDbContext>("postgresdb");
 
 // -----------------------------------------------------------------------------
-// 3. Preload translations into Redis and shared memory cache at startup
+// 3. Register TranslationCacheHolder and TranslationCacheWarmupService
 // -----------------------------------------------------------------------------
-var translationsCache = new Dictionary<string, Dictionary<string, string>>();
-
-using (var scope = builder.Services.BuildServiceProvider().CreateScope())
-{
-    var translationService = scope.ServiceProvider.GetRequiredService<ITranslationService>();
-    var supportedLocales = new[] { "en", "es", "fr" };
-
-    foreach (var locale in supportedLocales)
-    {
-        var translations = await translationService.GetAllTranslationsAsync(locale);
-        translationsCache[locale] = translations;
-
-        var redis = scope.ServiceProvider.GetRequiredService<IConnectionMultiplexer>().GetDatabase();
-        await redis.StringSetAsync(
-            $"translations:{locale}",
-            JsonSerializer.Serialize(translations),
-            TimeSpan.FromDays(7)
-        );
-    }
-}
-
-// Register the preloaded translations cache as a singleton service
-builder.Services.AddSingleton(translationsCache);
+builder.Services.AddSingleton<TranslationCacheHolder>();
+builder.Services.AddHostedService<TranslationCacheWarmupService>(); // Preload translations
 
 // -----------------------------------------------------------------------------
 // 4. Remove direct API service registrations (TheMealDbApiClient, IRecipeService, etc.)
@@ -63,10 +45,14 @@ if (string.IsNullOrWhiteSpace(apiStandaloneHost))
 {
     throw new InvalidOperationException("ApiStandaloneHost is not configured.");
 }
+
 builder.Services.AddHttpClient("ApiHost", client =>
 {
     client.BaseAddress = new Uri(apiStandaloneHost);
 });
+
+// Register strongly-typed API client for Blazor-side consumption
+builder.Services.AddHttpClient<RecipesApiClient>("ApiHost");
 
 // -----------------------------------------------------------------------------
 // 5. Register a default HttpClient using NavigationManager for internal links
