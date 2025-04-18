@@ -6,8 +6,9 @@
 	       class="search-input" @onkeydown="HandleKeyPress"
 	       aria-label="@Translations["SearchBar.SearchLabel"]" />
 
-	<button @onclick="TriggerSearch" class="search-button" disabled="@IsLoading"
-	        aria-label="@Translations["SearchBar.SearchButtonLabel"]">
+	<button @onclick="TriggerSearch" class="search-button" 
+	        aria-label="@Translations["SearchBar.SearchButtonLabel"]"
+	        disabled="@IsLoading">
 		@(IsLoading
 			? Translations["SearchBar.Loading"]
 			: Translations["SearchBar.SearchButton"])
@@ -32,7 +33,7 @@
 	{
 		if (!IsLoading)
 		{
-			OnSearch.InvokeAsync(Query);
+			OnSearch.InvokeAsync(Query);  // Trigger the search on parent component
 		}
 	}
 }

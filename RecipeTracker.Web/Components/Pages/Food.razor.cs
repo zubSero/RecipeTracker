@@ -24,17 +24,28 @@ public class FoodBase : ComponentBase
                 ["Food.ErrorOccurred"] = "An error occurred."
             };
 
+    // Use OnAfterRenderAsync to trigger the initial search after the first render
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Trigger search only after the first render
+            //await SearchRecipes(Query);
+        }
+    }
+
+    // Modified SearchRecipes method to be more cautious with async state changes
     protected async Task SearchRecipes(string query)
     {
         if (IsLoading) return;
 
         IsLoading = true;
-        StateHasChanged();
+        ErrorMessage = null;  // Reset error message on new search
 
         try
         {
             var results = await RecipesApi.SearchAsync(query);
-            Recipes = results;
+            Recipes = results;  // Assign fetched recipes
             ErrorMessage = results.Count == 0 ? t["Food.NoRecipesFoundMessage"] : null;
         }
         catch (Exception ex)
@@ -45,7 +56,6 @@ public class FoodBase : ComponentBase
         finally
         {
             IsLoading = false;
-            StateHasChanged();
         }
     }
 }

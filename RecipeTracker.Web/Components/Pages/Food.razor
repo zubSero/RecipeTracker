@@ -6,29 +6,26 @@
 
 <h3>@t["Food.PageTitle"]</h3>
 
-<!-- Search Bar Component to trigger search action and display loading state -->
-<SearchBar Query="@Query"
-           OnSearch="@SearchRecipes"
+<!-- Search Bar Component -->
+@* <SearchBar Query="@Query"
+           OnSearch="SearchRecipes"
            IsLoading="@IsLoading"
-           Translations="@t" />
+           Translations="@t" /> *@
 
 @if (ErrorMessage != null)
 {
 	<p class="error-message">@ErrorMessage</p>
 }
-else if (Recipes == null)
+else if (IsLoading)
 {
-	<!-- Show loading message while waiting for recipes -->
 	<p>@t["Food.Loading"]</p>
 }
 else if (Recipes.Count == 0)
 {
-	<!-- Display no recipes message if no results found -->
 	<p>@t["Food.NoRecipesFoundMessage"]</p>
 }
 else
 {
-	<!-- Render recipe cards if recipes are available -->
 	<div class="recipe-cards grid-container">
 		@foreach (var recipe in Recipes)
 		{
