@@ -1,16 +1,16 @@
-﻿using RecipeTracker.ApiService.DB;
+﻿using Microsoft.EntityFrameworkCore;
 using RecipeTracker.Web.API.Translations;
 
 namespace RecipeTracker.ApiService.Translations;
 
 public static class TranslationSeedData
 {
-    public static void Initialize(TranslationDbContext context)
+    public static async Task InitializeAsync(TranslationDbContext context)
     {
         if (context.Translations.Any())
             return;
 
-        var products = new List<TranslationModel>
+        var translations = new List<TranslationModel>
         {
             new() { Id = 1, LanguageCode = "en", Key = "MealDbApi.BaseUrl.Missing", Value = "MealDbApi:BaseUrl not found in configuration." },
             new() { Id = 2, LanguageCode = "en", Key = "Search.Query.Empty", Value = "Search query is empty or null." },
@@ -34,7 +34,24 @@ public static class TranslationSeedData
             new() { Id = 20, LanguageCode = "en", Key = "Food.WatchOnYouTubeLink", Value = "Watch on YouTube" },
             new() { Id = 21, LanguageCode = "en", Key = "Food.ErrorOccurred", Value = "An error has occurred!" }
         };
-        context.AddRange(products);
-        context.SaveChanges();
+
+        foreach (var translation in translations)
+        {
+            var existingTranslation = await context.Translations
+                .FirstOrDefaultAsync(t => t.Key == translation.Key && t.LanguageCode == translation.LanguageCode);
+
+            if (existingTranslation != null)
+            {
+                if (existingTranslation.Value == translation.Value) continue;
+                existingTranslation.Value = translation.Value;
+                context.Translations.Update(existingTranslation);
+            }
+            else
+            {
+                await context.Translations.AddAsync(translation);
+            }
+        }
+
+        await context.SaveChangesAsync();
     }
 }

@@ -120,7 +120,7 @@ namespace RecipeTracker.ApiService.Models.External
         // A separate container for dynamic ingredients and measures
         public MealDetails MealDetails { get; set; } = new();
 
-        // Initialize ingredients and measures dynamically from JSON
+        // InitializeAsync ingredients and measures dynamically from JSON
         public void InitializeDetailsFromJson(JsonElement json)
         {
             MealDetails.InitializeIngredientsAndMeasures(json);

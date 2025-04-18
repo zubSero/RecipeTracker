@@ -1,13 +1,10 @@
 using RecipeTracker.ServiceDefaults;
-using RecipeTracker.Web.API.Translations;
-using RecipeTracker.Web.API.Translations.Interface;
 using RecipeTracker.Web.Components;
 using Microsoft.AspNetCore.Components;
 using RecipeTracker.ApiService.API;
 using RecipeTracker.ApiService.Service.Internal;
+using RecipeTracker.ApiService.Service.Internal.Interface;
 using RecipeTracker.ApiService.Translations;
-
-// Note: Removed using references for API internal services since they now run on a separate host.
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +29,10 @@ builder.AddNpgsqlDbContext<TranslationDbContext>("postgresdb");
 // 3. Register TranslationCacheHolder and TranslationCacheWarmupService
 // -----------------------------------------------------------------------------
 builder.Services.AddSingleton<TranslationCacheHolder>();
-builder.Services.AddHostedService<TranslationCacheWarmupService>(); // Preload translations
+builder.Services.AddSingleton(provider => provider.GetRequiredService<TranslationCacheHolder>().Cache);
+
+// This is the correct way to register the hosted service:
+builder.Services.AddHostedService<TranslationCacheWarmupService>();
 
 // -----------------------------------------------------------------------------
 // 4. Remove direct API service registrations (TheMealDbApiClient, IRecipeService, etc.)
@@ -64,7 +64,7 @@ builder.Services.AddScoped(sp =>
 var app = builder.Build();
 
 // Ensure the database is created and seeded first
-app.CreateDbIfNotExists();
+await app.CreateDbIfNotExists();
 
 // Now, warm-up the Redis cache only after DB seeding
 using (var scope = app.Services.CreateScope())

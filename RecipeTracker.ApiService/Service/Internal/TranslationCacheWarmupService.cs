@@ -1,14 +1,14 @@
 ﻿using StackExchange.Redis;
 using System.Text.Json;
+using RecipeTracker.ApiService.Service.Internal.Interface;
 using RecipeTracker.ApiService.Translations;
-using RecipeTracker.Web.API.Translations.Interface;
 
 namespace RecipeTracker.ApiService.Service.Internal;
 
 public class TranslationCacheWarmupService(
     IServiceProvider serviceProvider,
-    ILogger<TranslationCacheWarmupService> logger
-) : IHostedService
+    ILogger<TranslationCacheWarmupService> logger)
+    : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -17,7 +17,7 @@ public class TranslationCacheWarmupService(
         var redis = scope.ServiceProvider.GetRequiredService<IConnectionMultiplexer>().GetDatabase();
 
         var supportedLocales = new[] { "en", "es", "fr" };
-        var cache = new Dictionary<string, Dictionary<string, string>>();
+        var cache = new Dictionary<string, Dictionary<string, string>?>();
 
         foreach (var locale in supportedLocales)
         {
