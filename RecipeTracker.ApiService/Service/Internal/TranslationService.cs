@@ -1,10 +1,8 @@
-﻿using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
-using RecipeTracker.ApiService.Service.Internal.Interface;
+﻿using RecipeTracker.ApiService.Service.Internal.Interface;
 using RecipeTracker.ApiService.Translations;
 using StackExchange.Redis;
-
-namespace RecipeTracker.ApiService.Service.Internal;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 public class TranslationService(
     TranslationDbContext context,
@@ -28,6 +26,7 @@ public class TranslationService(
     {
         var cacheKey = $"translation:{languageCode}:{key}";
 
+        // Check Redis first
         var cachedValue = await _redis.StringGetAsync(cacheKey);
         if (!string.IsNullOrEmpty(cachedValue))
         {
@@ -35,12 +34,13 @@ public class TranslationService(
             return cachedValue;
         }
 
+        // Fallback to database
         var value = await context.Translations
             .Where(t => t.Key == key && t.LanguageCode == languageCode)
             .Select(t => t.Value)
             .FirstOrDefaultAsync();
 
-        if (string.IsNullOrEmpty(value)) return $"[{key}]";
+        if (string.IsNullOrEmpty(value)) return $"[{key}]"; // Fallback to the key if not found
 
         logger.LogInformation("Caching translation for key '{Key}' in Redis.", key);
         await _redis.StringSetAsync(cacheKey, value, TimeSpan.FromHours(1));
@@ -64,7 +64,7 @@ public class TranslationService(
         {
             logger.LogInformation("Loaded all translations for language '{LanguageCode}' from Redis cache.", languageCode);
             return new FallbackTranslationDictionary(
-                JsonSerializer.Deserialize<Dictionary<string, string>>(cachedTranslations!) ?? []
+                JsonSerializer.Deserialize<Dictionary<string, string>>(cachedTranslations!) ?? new Dictionary<string, string>()
             );
         }
 

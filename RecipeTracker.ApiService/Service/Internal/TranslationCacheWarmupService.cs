@@ -6,16 +6,15 @@ using RecipeTracker.ApiService.Translations;
 namespace RecipeTracker.ApiService.Service.Internal;
 
 public class TranslationCacheWarmupService(
-    IServiceProvider serviceProvider,
-    ILogger<TranslationCacheWarmupService> logger)
+    ITranslationService translationService,
+    IConnectionMultiplexer redisConnection,
+    ILogger<TranslationCacheWarmupService> logger,
+    TranslationCacheHolder translationCacheHolder) // Inject the holder here
     : IHostedService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        using var scope = serviceProvider.CreateScope();
-        var translationService = scope.ServiceProvider.GetRequiredService<ITranslationService>();
-        var redis = scope.ServiceProvider.GetRequiredService<IConnectionMultiplexer>().GetDatabase();
-
+        var redis = redisConnection.GetDatabase();
         var supportedLocales = new[] { "en", "es", "fr" };
         var cache = new Dictionary<string, Dictionary<string, string>?>();
 
@@ -40,8 +39,8 @@ public class TranslationCacheWarmupService(
             await redis.StringSetAsync(cacheKey, JsonSerializer.Serialize(translations), TimeSpan.FromDays(7));
         }
 
-        // Register the cache into the shared memory (optional, if needed elsewhere)
-        serviceProvider.GetRequiredService<TranslationCacheHolder>().SetCache(cache);
+        // Set the populated cache into the TranslationCacheHolder
+        translationCacheHolder.SetCache(cache);
 
         logger.LogInformation("Translation cache warm-up completed.");
     }

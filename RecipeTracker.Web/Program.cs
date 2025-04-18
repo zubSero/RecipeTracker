@@ -29,10 +29,7 @@ builder.AddNpgsqlDbContext<TranslationDbContext>("postgresdb");
 // 3. Register TranslationCacheHolder and TranslationCacheWarmupService
 // -----------------------------------------------------------------------------
 builder.Services.AddSingleton<TranslationCacheHolder>();
-builder.Services.AddSingleton(provider => provider.GetRequiredService<TranslationCacheHolder>().Cache);
-
-// This is the correct way to register the hosted service:
-builder.Services.AddHostedService<TranslationCacheWarmupService>();
+builder.Services.AddScoped<TranslationCacheWarmupService>();  // Change to Scoped service
 
 // -----------------------------------------------------------------------------
 // 4. Remove direct API service registrations (TheMealDbApiClient, IRecipeService, etc.)
@@ -70,7 +67,7 @@ await app.CreateDbIfNotExists();
 using (var scope = app.Services.CreateScope())
 {
     var warmupService = scope.ServiceProvider.GetRequiredService<TranslationCacheWarmupService>();
-    await warmupService.StartAsync(CancellationToken.None);
+    await warmupService.StartAsync(CancellationToken.None);  // Starting the service after DB seeding
 }
 
 if (!app.Environment.IsDevelopment())
