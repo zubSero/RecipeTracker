@@ -1,5 +1,4 @@
 ﻿using RecipeTracker.ApiService.DB;
-using RecipeTracker.Web.API;
 using RecipeTracker.Web.API.Translations;
 
 namespace RecipeTracker.ApiService.Translations;

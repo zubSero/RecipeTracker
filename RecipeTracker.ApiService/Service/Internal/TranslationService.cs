@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RecipeTracker.Web.API.Translations.Interface;
+﻿using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using RecipeTracker.ApiService.Service.Internal.Interface;
+using RecipeTracker.ApiService.Translations;
 using StackExchange.Redis;
-using System.Text.Json;
-using RecipeTracker.ApiService.DB;
 
-namespace RecipeTracker.Web.API.Translations;
+namespace RecipeTracker.ApiService.Service.Internal;
 
 public class TranslationService(
     TranslationDbContext context,
@@ -12,16 +12,17 @@ public class TranslationService(
     ILogger<TranslationService> logger)
     : ITranslationService
 {
+    private readonly IDatabase _redis = redis.GetDatabase();
+
     public async Task<string?> GetTranslationAsync(string key, string languageCode)
     {
         var cacheKey = $"translation:{languageCode}:{key}";
-        var database = redis.GetDatabase();
 
         // Check Redis first
-        var cachedValue = await database.StringGetAsync(cacheKey);
+        var cachedValue = await _redis.StringGetAsync(cacheKey);
         if (!string.IsNullOrEmpty(cachedValue))
         {
-            logger.LogInformation("Loaded translation for key '{key}' from Redis cache.", key);
+            logger.LogInformation("Loaded translation for key '{Key}' from Redis cache.", key);  // Correct placeholder
             return cachedValue;
         }
 
@@ -32,13 +33,11 @@ public class TranslationService(
             .FirstOrDefaultAsync();
 
         // Cache the result if found
-        if (!string.IsNullOrEmpty(value))
-        {
-            logger.LogInformation("Caching translation for key '{key}' in Redis.", key);
-            await database.StringSetAsync(cacheKey, value, TimeSpan.FromHours(1)); // Expire after 1 hour
-        }
+        if (string.IsNullOrEmpty(value)) return value ?? string.Empty; // Ensure non-null return value
+        logger.LogInformation("Caching translation for key '{Key}' in Redis.", key); // Correct placeholder
+        await _redis.StringSetAsync(cacheKey, value, TimeSpan.FromHours(1)); // Expire after 1 hour
 
-        return value;
+        return value; // Ensure non-null return value
     }
 
     public async Task<Dictionary<string, string>> SearchTranslationsAsync(string languageCode, string searchTerm)
@@ -52,42 +51,28 @@ public class TranslationService(
     public async Task<Dictionary<string, string>> GetAllTranslationsAsync(string languageCode)
     {
         var cacheKey = $"translations:{languageCode}";
-        var database = redis.GetDatabase();
 
-        // Clear Redis cache on startup (optional for first-time call)
-        if (!database.KeyExists(cacheKey))
-        {
-            logger.LogInformation("Clearing Redis cache for language '{languageCode}' on startup.", languageCode);
-
-            // Pull fresh data from the database
-            var translations = await context.Translations
-                .Where(t => t.LanguageCode == languageCode)
-                .ToDictionaryAsync(t => t.Key, t => t.Value);
-
-            // Cache the fresh data in Redis
-            logger.LogInformation("Caching all translations for language '{languageCode}' in Redis.", languageCode);
-            await database.StringSetAsync(cacheKey, JsonSerializer.Serialize(translations), TimeSpan.FromHours(1));
-
-            return translations;
-        }
-
-        // Check Redis cache for translations
-        var cachedTranslations = await database.StringGetAsync(cacheKey);
+        // Check Redis for cached translations
+        var cachedTranslations = await _redis.StringGetAsync(cacheKey);
         if (!string.IsNullOrEmpty(cachedTranslations))
         {
-            logger.LogInformation("Loaded all translations for language '{languageCode}' from Redis cache.", languageCode);
-            return JsonSerializer.Deserialize<Dictionary<string, string>>(cachedTranslations);
+            logger.LogInformation("Loaded all translations for language '{LanguageCode}' from Redis cache.", languageCode); // Correct placeholder
+
+            // Ensure cached data is valid before deserialization
+            return string.IsNullOrEmpty(cachedTranslations)
+                ? new Dictionary<string, string>()
+                : JsonSerializer.Deserialize<Dictionary<string, string>>(cachedTranslations!) ?? new Dictionary<string, string>();
         }
 
-        // Fallback to database if Redis cache is empty
+        // Fetch translations from the database if not cached
         logger.LogInformation("Translations not found in Redis, querying database...");
         var freshTranslations = await context.Translations
             .Where(t => t.LanguageCode == languageCode)
             .ToDictionaryAsync(t => t.Key, t => t.Value);
 
-        // Cache the fresh translations in Redis
-        logger.LogInformation("Caching all translations for language '{languageCode}' in Redis.", languageCode);
-        await database.StringSetAsync(cacheKey, JsonSerializer.Serialize(freshTranslations), TimeSpan.FromHours(1));
+        // Cache the fresh translations in Redis with a 1-hour expiration
+        logger.LogInformation("Caching all translations for language '{LanguageCode}' in Redis.", languageCode); // Correct placeholder
+        await _redis.StringSetAsync(cacheKey, JsonSerializer.Serialize(freshTranslations), TimeSpan.FromHours(1));
 
         return freshTranslations;
     }

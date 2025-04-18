@@ -21,17 +21,26 @@ public class TranslationCacheWarmupService(
 
         foreach (var locale in supportedLocales)
         {
+            var cacheKey = $"translations:{locale}";
+
+            // Check if cache already exists
+            var existingCache = await redis.StringGetAsync(cacheKey);
+
+            if (!string.IsNullOrEmpty(existingCache))
+            {
+                logger.LogInformation($"Cache for {locale} already exists, skipping warm-up.");
+                continue; // Skip if the cache already exists
+            }
+
+            // Fetch translations from the database
             var translations = await translationService.GetAllTranslationsAsync(locale);
             cache[locale] = translations;
 
-            await redis.StringSetAsync(
-                $"translations:{locale}",
-                JsonSerializer.Serialize(translations),
-                TimeSpan.FromDays(7)
-            );
+            // Store in Redis with an expiration of 7 days
+            await redis.StringSetAsync(cacheKey, JsonSerializer.Serialize(translations), TimeSpan.FromDays(7));
         }
 
-        // Register shared memory cache as singleton (via singleton instance injection)
+        // Register the cache into the shared memory (optional, if needed elsewhere)
         serviceProvider.GetRequiredService<TranslationCacheHolder>().SetCache(cache);
 
         logger.LogInformation("Translation cache warm-up completed.");

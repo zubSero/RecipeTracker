@@ -1,8 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RecipeTracker.ApiService.Translations;
 using RecipeTracker.Web.API.Translations;
 
-namespace RecipeTracker.ApiService.DB;
+namespace RecipeTracker.ApiService.Translations;
 
 public class TranslationDbContext(DbContextOptions<TranslationDbContext> options) : DbContext(options)
 {
@@ -23,7 +22,7 @@ public static class Extensions
             TranslationSeedData.Initialize(context);
 
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // ignored
         }

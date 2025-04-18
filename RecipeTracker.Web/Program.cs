@@ -1,11 +1,9 @@
 using RecipeTracker.ServiceDefaults;
-using RecipeTracker.Web.API;
 using RecipeTracker.Web.API.Translations;
 using RecipeTracker.Web.API.Translations.Interface;
 using RecipeTracker.Web.Components;
 using Microsoft.AspNetCore.Components;
 using RecipeTracker.ApiService.API;
-using RecipeTracker.ApiService.DB;
 using RecipeTracker.ApiService.Service.Internal;
 using RecipeTracker.ApiService.Translations;
 
@@ -65,6 +63,16 @@ builder.Services.AddScoped(sp =>
 
 var app = builder.Build();
 
+// Ensure the database is created and seeded first
+app.CreateDbIfNotExists();
+
+// Now, warm-up the Redis cache only after DB seeding
+using (var scope = app.Services.CreateScope())
+{
+    var warmupService = scope.ServiceProvider.GetRequiredService<TranslationCacheWarmupService>();
+    await warmupService.StartAsync(CancellationToken.None);
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -84,8 +92,5 @@ app.MapRazorComponents<App>()
 app.MapRazorPages();
 app.MapGet("/", () => Results.Redirect("/food"));
 app.MapDefaultEndpoints();
-
-// (Optional) Create the database if necessary.
-app.CreateDbIfNotExists();
 
 app.Run();

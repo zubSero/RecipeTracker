@@ -1,4 +1,4 @@
-﻿namespace RecipeTracker.Web.API.Translations.Interface
+﻿namespace RecipeTracker.ApiService.Service.Internal.Interface
 {
     public interface ITranslationService
     {
