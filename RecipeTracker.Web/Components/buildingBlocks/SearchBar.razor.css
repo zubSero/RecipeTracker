@@ -29,3 +29,10 @@
 .search-button:hover {
     background-color: #1861ac;
 }
+
+.btn-disabled {
+    background-color: #d3d3d3; /* Light gray background */
+    color: #a9a9a9; /* Lighter text color */
+    border: 1px solid #ccc; /* Gray border */
+    cursor: not-allowed; /* Change cursor to indicate it's disabled */
+}

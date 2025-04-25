@@ -47,7 +47,9 @@ public class FoodBase : ComponentBase
         {
             var results = await RecipesApi.SearchAsync(query);
             Recipes = results;  // Assign fetched recipes
-            ErrorMessage = results.Count == 0 ? t["Food.NoRecipesFoundMessage"] : null;
+
+            // If no results, show appropriate message
+            ErrorMessage = results.Count == 0 ? t["Food.NoRecipesFoundMessage"] : null; // Clear error message if results are found
         }
         catch (Exception ex)
         {
@@ -59,4 +61,5 @@ public class FoodBase : ComponentBase
             IsLoading = false;
         }
     }
+
 }

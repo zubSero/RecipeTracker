@@ -1,12 +1,17 @@
 ﻿@rendermode InteractiveServer
+
 <div class="search-bar">
 	<input type="text"
 	       @bind="Query"
 	       @bind:event="oninput"
 	       placeholder="@Translations["SearchBar.SearchPrompt"]"
-	       aria-label="@Translations["SearchBar.SearchLabel"]" />
+	       aria-label="@Translations["SearchBar.SearchLabel"]"
+	       @onkeydown="HandleKeyDown" />
 
-	<button @onclick="HandleSearch" disabled="@IsLoading" aria-label="@Translations["SearchBar.SearchButtonLabel"]">
+	<button @onclick="HandleSearch" 
+	        class="@(IsLoading || string.IsNullOrWhiteSpace(Query) ? "btn-disabled" : "")" 
+	        disabled="@IsLoading || string.IsNullOrWhiteSpace(Query)" 
+	        aria-label="@Translations["SearchBar.SearchButtonLabel"]">
 		@Translations["SearchBar.SearchButton"]
 	</button>
 </div>
@@ -19,9 +24,17 @@
 
 	private void HandleSearch()
 	{
-		if (!IsLoading)
+		if (!IsLoading && !string.IsNullOrWhiteSpace(Query))
 		{
 			OnSearch.InvokeAsync(Query);
+		}
+	}
+
+	private void HandleKeyDown(KeyboardEventArgs e)
+	{
+		if (e.Code == "Enter" && !IsLoading && !string.IsNullOrWhiteSpace(Query))
+		{
+			HandleSearch();
 		}
 	}
 }
