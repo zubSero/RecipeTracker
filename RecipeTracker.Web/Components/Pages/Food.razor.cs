@@ -7,59 +7,62 @@ namespace RecipeTracker.Web.Components.Pages;
 
 public class FoodBase : ComponentBase
 {
+    // Inject dependencies for API client and translation cache holder
     [Inject] protected RecipesApiClient RecipesApi { get; set; } = null!;
     [Inject] protected TranslationCacheHolder CacheHolder { get; set; } = null!;
 
+    // Query for searching recipes
     protected string Query = string.Empty;
+
+    // List of fetched recipes
     protected List<RecipeModel> Recipes = [];
+
+    // Error message, if any
     protected string? ErrorMessage;
+
+    // Loading state flag
     protected bool IsLoading;
 
+    // Property for translations. Will gracefully fall back to displaying the key if no translations are available.
     protected IReadOnlyDictionary<string, string> t =>
-        CacheHolder.Cache.TryGetValue("en", out var translations) && translations is not null
-            ? translations
-            : new Dictionary<string, string>
-            {
-                ["Food.NoRecipesFoundMessage"] = "No recipes found.",
-                ["Food.ErrorOccurred"] = "An error occurred."
-            };
+        CacheHolder.Cache.TryGetValue("en", out var translations) ? translations : new Dictionary<string, string>();
 
-    // Use OnAfterRenderAsync to trigger the initial search after the first render
+    // Called after the component is first rendered. Trigger the search operation.
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // Trigger search only after the first render
-            Console.WriteLine("🚨 OnAfterRenderAsync firing");
+            // Only perform the search after the first render
             await SearchRecipes(Query);
         }
     }
 
-    // Modified SearchRecipes method to be more cautious with async state changes
+    // Searches for recipes and handles loading and error states.
     protected async Task SearchRecipes(string query)
     {
-        if (IsLoading) return;
+        if (IsLoading) return; // Prevent multiple simultaneous searches
 
-        IsLoading = true;
-        ErrorMessage = null;  // Reset error message on new search
+        IsLoading = true; // Set loading flag
+        ErrorMessage = null; // Clear previous error message
 
         try
         {
+            // Fetch recipes based on the search query
             var results = await RecipesApi.SearchAsync(query);
-            Recipes = results;  // Assign fetched recipes
+            Recipes = results; // Store the results
 
-            // If no results, show appropriate message
-            ErrorMessage = results.Count == 0 ? t["Food.NoRecipesFoundMessage"] : null; // Clear error message if results are found
+            // If no results, display the "No recipes found" message or fallback to the key
+            ErrorMessage = results.Count == 0 ? t.GetValueOrDefault("Food.NoRecipesFoundMessage", "Food.NoRecipesFoundMessage") : null;
         }
-        catch (Exception ex)
+        catch
         {
-            ErrorMessage = t["Food.ErrorOccurred"];
-            Console.Error.WriteLine(ex);
+            // On error, set the error message or fallback to the key
+            ErrorMessage = t.GetValueOrDefault("Food.ErrorOccurred", "Food.ErrorOccurred");
         }
         finally
         {
+            // Reset loading flag after completion
             IsLoading = false;
         }
     }
-
 }

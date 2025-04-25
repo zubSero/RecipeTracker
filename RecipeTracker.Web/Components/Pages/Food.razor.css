@@ -7,3 +7,15 @@ body {
 h1, h2, h3, h4, h5, h6 {
     color: var(--text-color); /* Light text color for headings */
 }
+
+/* Error Message Styling */
+.error-message {
+    color: var(--error-color, red); /* Default to red if no custom error color is defined */
+    font-size: 1.2rem; /* Relative font size */
+    font-weight: bold;
+    padding: 1rem; /* Relative padding */
+    background-color: var(--error-background, #ffe6e6); /* Light red background */
+    border: 0.1rem solid var(--error-color, red); /* Relative border width */
+    border-radius: 0.5rem; /* Rounded corners with relative radius */
+    margin-top: 1.5rem; /* Margin relative to surrounding elements */
+}

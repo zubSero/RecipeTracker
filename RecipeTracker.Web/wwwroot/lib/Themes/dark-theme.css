@@ -9,6 +9,8 @@
     --link-color: #1b6ec2; /* Link color */
     --link-hover-color: #66aaff; /* Link hover color */
     --spacing-unit: 1rem; /* Standard spacing unit */
+    --error-color: #e74c3c; /* Red color for error */
+    --error-background: #ffe6e6; /* Light red background */
 }
 
 /* Body and General Styles */
