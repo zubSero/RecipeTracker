@@ -30,7 +30,8 @@ public class FoodBase : ComponentBase
         if (firstRender)
         {
             // Trigger search only after the first render
-            //await SearchRecipes(Query);
+            Console.WriteLine("🚨 OnAfterRenderAsync firing");
+            await SearchRecipes(Query);
         }
     }
 

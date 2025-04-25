@@ -1,39 +1,27 @@
 ﻿@rendermode InteractiveServer
-
 <div class="search-bar">
-	<input type="text" @bind="Query" @bind:event="oninput"
+	<input type="text"
+	       @bind="Query"
+	       @bind:event="oninput"
 	       placeholder="@Translations["SearchBar.SearchPrompt"]"
-	       class="search-input" @onkeydown="HandleKeyPress"
 	       aria-label="@Translations["SearchBar.SearchLabel"]" />
 
-	<button @onclick="TriggerSearch" class="search-button" 
-	        aria-label="@Translations["SearchBar.SearchButtonLabel"]"
-	        disabled="@IsLoading">
-		@(IsLoading
-			? Translations["SearchBar.Loading"]
-			: Translations["SearchBar.SearchButton"])
+	<button @onclick="HandleSearch" disabled="@IsLoading" aria-label="@Translations["SearchBar.SearchButtonLabel"]">
+		@Translations["SearchBar.SearchButton"]
 	</button>
 </div>
 
 @code {
 	[Parameter] public string Query { get; set; } = string.Empty;
 	[Parameter] public EventCallback<string> OnSearch { get; set; }
-	[Parameter] public bool IsLoading { get; set; } = false;
-	[Parameter, EditorRequired] public IReadOnlyDictionary<string, string> Translations { get; set; } = new Dictionary<string, string>();
+	[Parameter] public bool IsLoading { get; set; }
+	[Parameter] public IReadOnlyDictionary<string, string> Translations { get; set; } = new Dictionary<string, string>();
 
-	private void HandleKeyPress(KeyboardEventArgs e)
-	{
-		if (e.Key == "Enter")
-		{
-			TriggerSearch();
-		}
-	}
-
-	private void TriggerSearch()
+	private void HandleSearch()
 	{
 		if (!IsLoading)
 		{
-			OnSearch.InvokeAsync(Query);  // Trigger the search on parent component
+			OnSearch.InvokeAsync(Query);
 		}
 	}
 }

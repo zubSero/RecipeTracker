@@ -1,16 +1,17 @@
 @page "/food"
 @using RecipeTracker.Web.Components.buildingBlocks
 @inherits FoodBase
+@rendermode InteractiveServer
 
 <PageTitle>@t["Food.PageTitle"]</PageTitle>
 
 <h3>@t["Food.PageTitle"]</h3>
 
 <!-- Search Bar Component -->
-@* <SearchBar Query="@Query"
+<SearchBar Query="@Query"
            OnSearch="SearchRecipes"
            IsLoading="@IsLoading"
-           Translations="@t" /> *@
+           Translations="@t" />
 
 @if (ErrorMessage != null)
 {
@@ -18,7 +19,7 @@
 }
 else if (IsLoading)
 {
-	<p>@t["Food.Loading"]</p>
+	<p>@t["Food.LoadingState"]</p>
 }
 else if (Recipes.Count == 0)
 {
